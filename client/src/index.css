@@ -114,3 +114,72 @@ body {
   font-weight: 600;
   padding: 12px;
 }
+
+/* =========================
+   DASHBOARD
+   ========================= */
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.dashboard-card {
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.learning-item {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.dashboard-card .progress {
+  height: 9px;
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.dashboard-card .progress-bar {
+  border-radius: 10px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e7f7ed;
+  color: #198754;
+  font-weight: 700;
+}
