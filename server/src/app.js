@@ -6,6 +6,8 @@ const authRoutes = require('./routes/authRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
 const learningRoutes = require('./routes/learningRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const progressRoutes = require('./routes/progressRoutes');
+const offlineRoutes = require('./routes/offlineRoutes');
 
 function createApp() {
 	const app = express();
@@ -18,6 +20,8 @@ function createApp() {
 	app.use('/api/assessments', assessmentRoutes);
 	app.use('/api/learning-path', learningRoutes);
 	app.use('/api/ai', aiRoutes);
+	app.use('/api/progress', progressRoutes);
+	app.use('/api/offline', offlineRoutes);
 
 	return app;
 }

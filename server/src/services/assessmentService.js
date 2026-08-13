@@ -5,6 +5,7 @@ const Assessment = require('../models/Assessment');
 const Result = require('../models/Result');
 const User = require('../models/User');
 const Question = require('../models/Question');
+const { updateProgressFromResult } = require('./progressService');
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -167,7 +168,7 @@ async function getAssessmentById({ assessmentId, userId, role }) {
   };
 }
 
-async function submitAssessment({ assessmentId, answers, userId, role }) {
+async function submitAssessment({ assessmentId, answers, userId, role, offlineActivityId, completedAt }) {
   if (!mongoose.Types.ObjectId.isValid(assessmentId)) {
     throw createError('Invalid assessment ID', 400);
   }
@@ -271,7 +272,11 @@ async function submitAssessment({ assessmentId, answers, userId, role }) {
     answers: answerDetails,
     topicPerformance,
     weakConcepts,
+    offlineActivityId,
+    completedAt: completedAt || undefined,
   });
+
+  await updateProgressFromResult(savedResult);
 
   return {
     id: savedResult._id.toString(),

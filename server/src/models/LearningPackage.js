@@ -9,7 +9,8 @@ const learningPackageSchema = new Schema(
     topics: { type: [String], default: [] },
     lessons: { type: [Schema.Types.Mixed], default: [] },
     questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-    version: { type: String, default: '1.0' },
+    version: { type: Number, default: 1, min: 1 },
+    pathSignature: { type: String, default: '' },
   },
   { timestamps: true }
 );
