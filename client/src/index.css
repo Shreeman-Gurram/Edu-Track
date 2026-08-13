@@ -183,3 +183,83 @@ body {
   color: #198754;
   font-weight: 700;
 }
+
+/* =========================
+   SUBJECTS
+   ========================= */
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.subject-card {
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subject-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+.subject-title {
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.subject-topic-count {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subject-progress {
+  height: 8px;
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.subject-progress .progress-bar {
+  border-radius: 10px;
+}
+
+/* =========================
+   TOPICS
+   ========================= */
+
+.topic-card {
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+.topic-title {
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.topic-progress {
+  height: 8px;
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.topic-progress .progress-bar {
+  border-radius: 10px;
+}
