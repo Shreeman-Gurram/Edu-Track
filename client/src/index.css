@@ -47,3 +47,70 @@ body {
   }
 
 }
+/* =========================
+   LOGIN PAGE
+   ========================= */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(
+    135deg,
+    #f8f9fa 0%,
+    #e7f1ff 100%
+  );
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background-color: #0d6efd;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.brand-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.login-card {
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+.login-heading {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.login-card .form-control {
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.login-card .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+}
+
+.login-card .btn-primary {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 12px;
+}
