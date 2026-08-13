@@ -5,8 +5,8 @@ const { Schema } = mongoose;
 const itemSchema = new Schema({
   topic: { type: String, required: true },
   concept: { type: String },
-  priority: { type: Number, default: 1 },
-  status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
+  priority: { type: String, enum: ['high', 'medium', 'low'], default: 'low' },
+  status: { type: String, enum: ['not_started', 'in_progress', 'completed'], default: 'not_started' },
   recommendedAction: { type: String },
 });
 

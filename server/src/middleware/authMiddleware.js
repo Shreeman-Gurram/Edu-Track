@@ -50,8 +50,9 @@ function protect(req, res, next) {
         }
 
         req.user = {
-          userId: decodedToken.userId,
-          role: decodedToken.role,
+          _id: user._id,
+          userId: user._id.toString(),
+          role: user.role,
         };
 
         return next();
@@ -79,4 +80,10 @@ function protect(req, res, next) {
 
 module.exports = {
   protect,
+  adminOnly(req, res, next) {
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Admin access is required' });
+    }
+    return next();
+  },
 };
