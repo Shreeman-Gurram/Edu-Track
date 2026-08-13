@@ -1,4 +1,5 @@
 function Dashboard() {
+  
   const stats = [
     {
       title: 'Overall Progress',
@@ -85,7 +86,21 @@ function Dashboard() {
         ))}
 
       </div>
+      <div className="d-flex gap-2 mb-4">
+        <button
+          className="btn btn-primary"
+          onClick={() => window.location.href = '/assessment'}
+        >
+          Take Assessment
+        </button>
 
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => window.location.href = '/subjects'}
+        >
+          Explore Subjects
+        </button>
+      </div>
       {/* Continue Learning */}
       <div className="card dashboard-card mb-4">
 

@@ -263,3 +263,148 @@ body {
 .topic-progress .progress-bar {
   border-radius: 10px;
 }
+
+/* =========================
+   ASSESSMENT
+   ========================= */
+
+.assessment-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.assessment-progress-section {
+  max-width: 700px;
+}
+
+.assessment-progress {
+  height: 8px;
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.assessment-progress .progress-bar {
+  border-radius: 10px;
+}
+
+.assessment-card {
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.assessment-question {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.assessment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assessment-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  background-color: white;
+  text-align: left;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.assessment-option:hover {
+  border-color: #0d6efd;
+  background-color: #f8fbff;
+}
+
+.assessment-option.selected {
+  border-color: #0d6efd;
+  background-color: #e7f1ff;
+}
+
+.option-circle {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #adb5bd;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.assessment-option.selected .option-circle {
+  border-color: #0d6efd;
+  background-color: #0d6efd;
+  color: white;
+}
+
+/* =========================
+   RESULTS
+   ========================= */
+
+.results-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.results-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #e7f7ed;
+  color: #198754;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.results-card {
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.results-score {
+  font-size: 56px;
+  font-weight: 700;
+  color: #0d6efd;
+  margin: 10px 0;
+}
+
+.results-correct {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.results-message {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.performance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.performance-row:last-child {
+  border-bottom: none;
+}
+
+.recommendation-card {
+  background-color: #f8fbff;
+}
