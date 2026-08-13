@@ -7,3 +7,43 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f8f9fa;
 }
+
+.sidebar {
+  width: 240px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar-link {
+  text-decoration: none;
+  color: #495057;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.sidebar-link:hover {
+  background-color: #f1f3f5;
+  color: #0d6efd;
+}
+
+.sidebar-link.active {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+
+  .sidebar {
+    width: 70px;
+  }
+
+  .sidebar-link {
+    font-size: 0;
+    text-align: center;
+  }
+
+  .sidebar-link::first-letter {
+    font-size: 18px;
+  }
+
+}

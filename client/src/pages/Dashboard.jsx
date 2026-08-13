@@ -1,7 +1,8 @@
 function Dashboard() {
   return (
-    <div className="container mt-4">
+    <div>
       <h1>Dashboard</h1>
+      <p>Welcome to Edu-Track</p>
     </div>
   )
 }
