@@ -8,7 +8,7 @@ import Assessment from './pages/Assessment'
 import Results from './pages/Results'
 import LearningPath from './pages/LearningPath'
 import Progress from './pages/Progress'
-
+import LearningContent from './pages/LearningContent'
 import MainLayout from './components/layout/MainLayout'
 
 function App() {
@@ -46,7 +46,10 @@ function App() {
             </MainLayout>
           }
         />
-
+        <Route
+          path="/learning-content"
+          element={<LearningContent />}
+        />
         <Route
           path="/assessment"
           element={

@@ -86,7 +86,7 @@ function LearningPath() {
 
           <button
             className="btn btn-primary"
-            onClick={() => navigate('/topics')}
+            onClick={() => navigate('/learning-content')}
           >
             Start Learning
           </button>
@@ -160,7 +160,7 @@ function LearningPath() {
 
                 <button
                   className="btn btn-outline-primary w-100"
-                  onClick={() => navigate('/topics')}
+                  onClick={() => navigate('/learning-content')}
                 >
                   {topic.action}
                 </button>
