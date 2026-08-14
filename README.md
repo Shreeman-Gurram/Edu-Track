@@ -1,5 +1,6 @@
 # Edu-Track
 <!-- Feature Shreeman -->
+
 What was completed
 
 1. Installed required packages
@@ -83,5 +84,113 @@ Response behavior implemented
 8. expired token
 9. user no longer exists
 
+Validation and runtime test results
+
+1. Server boot and MongoDB connection successful.
+2. Health endpoint returned 200.
+3. Register returned 201 with safe user and token.
+4. Duplicate register returned 409.
+5. Wrong-password login returned 401.
+6. Valid login returned 200 with safe user and token.
+7. Protected me with valid token returned 200.
+8. Protected me with invalid token returned 401.
+9. Missing token returned 401.
+10. Password was never returned in tested responses.
 
 
+
+
+
+
+
+
+Assessment backend is now implemented in your existing architecture, with auth-protected assessment APIs, score calculation, topic performance, weak concept detection, and MongoDB result storage. Existing Phase 1-3 routes remain working.
+
+Files created
+
+1. `assessmentService.js`
+2. `assessmentController.js`
+3. `assessmentRoutes.js`
+
+Files updated
+
+1. `app.js`
+
+Notes on existing models used (no duplicate models created)
+
+1. `Question.js`
+2. `Assessment.js`
+3. `Result.js`
+
+What was implemented
+
+1. Assessment service logic
+1. Get available assessments with student-grade filtering.
+2. Get one assessment with populated questions.
+3. Submit assessment answers, calculate:
+1. score
+2. totalQuestions
+3. percentage
+4. topicPerformance
+5. weakConcepts using deterministic rule (concept percentage < 60)
+4. Save result in MongoDB Result collection.
+5. Never return correctAnswer to students in GET assessment responses or submit response.
+
+2. Assessment controller
+1. Thin request/response handlers.
+2. Validation and error handling delegated to service errors/status codes.
+
+3. Assessment routes
+1. GET /api/assessments
+2. GET /api/assessments/:id
+3. POST /api/assessments/:id/submit
+4. All routes protected via existing protect middleware from `authMiddleware.js`.
+
+4. App route registration
+1. Mounted assessment routes under /api/assessments in `app.js`.
+2. Kept existing /api/health and /api/auth routes intact.
+
+Validation and runtime tests performed
+
+1. Unauthorized access check
+1. GET /api/assessments without JWT returned 401.
+
+2. Assessment listing and retrieval
+1. GET /api/assessments with JWT returned 200.
+2. GET /api/assessments/:id returned 200.
+3. Confirmed correctAnswer is not exposed in assessment question payload.
+
+3. Submission behavior
+1. POST submit with missing answers returned 400.
+2. POST submit with duplicate question IDs returned 400.
+3. POST submit with question IDs not belonging to the assessment returned 400.
+4. POST submit valid payload returned 200 with:
+1. score
+2. totalQuestions
+3. percentage
+4. topicPerformance
+5. weakConcepts
+
+4. Not found and ID validation
+1. Invalid assessment ID returned 400.
+2. Valid but non-existent assessment ID returned 404 for both GET and submit.
+
+5. Persistence check
+1. Confirmed Result document is saved in MongoDB after successful submission.
+
+Implemented API endpoints
+
+1. GET /api/assessments
+2. GET /api/assessments/:id
+3. POST /api/assessments/:id/submit
+
+Current structure additions match your expected Phase 4 layout
+
+1. `assessmentRoutes.js`
+2. `assessmentController.js`
+3. `assessmentService.js`
+4. `app.js` updated to register /api/assessments
+
+If you want, I can next add a small set of request examples for Thunder Client/Postman collections for these three endpoints only, without adding any new architecture or phase features.
+
+Made changes.
