@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 function Dashboard() {
-  
+  const navigate = useNavigate()
   const stats = [
     {
       title: 'Overall Progress',
@@ -99,6 +100,12 @@ function Dashboard() {
           onClick={() => window.location.href = '/subjects'}
         >
           Explore Subjects
+        </button>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate('/progress')}
+        >
+          View My Progress
         </button>
       </div>
       {/* Continue Learning */}
