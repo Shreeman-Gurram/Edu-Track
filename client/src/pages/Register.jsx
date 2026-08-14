@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-function Login() {
+function Register() {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   })
 
   const [error, setError] = useState('')
@@ -23,15 +25,31 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    if (!formData.email || !formData.password) {
-      setError('Please enter your email and password.')
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setError('Please fill in all fields.')
       return
     }
 
-    // Temporary frontend authentication
+    if (formData.password.length < 6) {
+      setError('Password must contain at least 6 characters.')
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
+    // Temporary frontend registration
     localStorage.setItem(
       'edutrackUser',
       JSON.stringify({
+        name: formData.name,
         email: formData.email,
       })
     )
@@ -52,42 +70,44 @@ function Login() {
           </div>
 
           <h1>
-            Learn at your own pace.
+            Start your learning journey.
           </h1>
 
           <p>
-            Continue your personalized learning journey
-            and improve your skills one step at a time.
+            Create your account and get a learning
+            experience built around your needs.
           </p>
 
           <div className="auth-feature">
             <span>✓</span>
-            <span>Personalized learning paths</span>
+            <span>Personalized learning experience</span>
           </div>
 
           <div className="auth-feature">
             <span>✓</span>
-            <span>Track your learning progress</span>
+            <span>Smart assessments</span>
           </div>
 
           <div className="auth-feature">
             <span>✓</span>
-            <span>Practice and improve your skills</span>
+            <span>Track your progress</span>
           </div>
 
         </div>
 
-        {/* Login Card */}
+        {/* Register Card */}
         <div className="auth-card">
 
           <div className="mb-4">
+
             <h2 className="fw-bold mb-2">
-              Welcome back
+              Create your account
             </h2>
 
             <p className="text-muted mb-0">
-              Sign in to continue learning.
+              Start learning with EduTrack.
             </p>
+
           </div>
 
           {error && (
@@ -97,6 +117,28 @@ function Login() {
           )}
 
           <form onSubmit={handleSubmit}>
+
+            {/* Name */}
+            <div className="mb-3">
+
+              <label
+                htmlFor="name"
+                className="form-label fw-semibold"
+              >
+                Full name
+              </label>
+
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="form-control auth-input"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+
+            </div>
 
             {/* Email */}
             <div className="mb-3">
@@ -121,33 +163,44 @@ function Login() {
             </div>
 
             {/* Password */}
-            <div className="mb-4">
+            <div className="mb-3">
 
-              <div className="d-flex justify-content-between">
-
-                <label
-                  htmlFor="password"
-                  className="form-label fw-semibold"
-                >
-                  Password
-                </label>
-
-                <button
-                  type="button"
-                  className="btn btn-link p-0 text-decoration-none"
-                >
-                  Forgot password?
-                </button>
-
-              </div>
+              <label
+                htmlFor="password"
+                className="form-label fw-semibold"
+              >
+                Password
+              </label>
 
               <input
                 type="password"
                 id="password"
                 name="password"
                 className="form-control auth-input"
-                placeholder="Enter your password"
+                placeholder="Create a password"
                 value={formData.password}
+                onChange={handleChange}
+              />
+
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-4">
+
+              <label
+                htmlFor="confirmPassword"
+                className="form-label fw-semibold"
+              >
+                Confirm password
+              </label>
+
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                className="form-control auth-input"
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
                 onChange={handleChange}
               />
 
@@ -157,24 +210,20 @@ function Login() {
               type="submit"
               className="btn btn-primary w-100 auth-button"
             >
-              Sign In
+              Create Account
             </button>
 
           </form>
 
-          <div className="auth-divider">
-            <span>or</span>
-          </div>
+          <p className="text-center text-muted mt-4 mb-0">
 
-          <p className="text-center text-muted mb-0">
-
-            Don't have an account?{' '}
+            Already have an account?{' '}
 
             <Link
-              to="/register"
+              to="/login"
               className="text-decoration-none fw-semibold"
             >
-              Create account
+              Sign in
             </Link>
 
           </p>
@@ -187,4 +236,4 @@ function Login() {
   )
 }
 
-export default Login
+export default Register

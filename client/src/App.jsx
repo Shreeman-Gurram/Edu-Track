@@ -10,6 +10,7 @@ import LearningPath from './pages/LearningPath'
 import Progress from './pages/Progress'
 import LearningContent from './pages/LearningContent'
 import MainLayout from './components/layout/MainLayout'
+import Register from './pages/Register'
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
       <Routes>
 
         {/* Login does not use the main layout */}
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Pages using Navbar + Sidebar */}
         <Route
