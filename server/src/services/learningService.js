@@ -3,7 +3,33 @@ const Result = require('../models/Result');
 const LearningPath = require('../models/LearningPath');
 
 function error(message, statusCode) { const e = new Error(message); e.statusCode = statusCode; return e; }
-function levelFor(percentage) { if (percentage < 40) return 'beginner'; if (percentage < 60) return 'basic'; if (percentage < 80) return 'practice'; return 'advanced'; }
+function levelFor(percentage) {
+  if (percentage < 40) return 'beginner';
+  if (percentage < 60) return 'needs_improvement';
+  if (percentage < 80) return 'practice';
+  return 'strong';
+}
+function priorityFor(percentage) {
+  if (percentage < 60) return 'high';
+  if (percentage < 80) return 'medium';
+  return 'low';
+}
+
+function actionFor(percentage) {
+  if (percentage < 40) {
+    return 'Relearn the concept and practice basic questions';
+  }
+
+  if (percentage < 60) {
+    return 'Review the concept and complete targeted practice';
+  }
+
+  if (percentage < 80) {
+    return 'Complete additional practice questions';
+  }
+
+  return 'Move to the next concept and try challenge questions';
+}
 
 async function getOwnedResult(resultId, userId) {
   if (!mongoose.Types.ObjectId.isValid(resultId)) throw error('Invalid result ID', 400);
@@ -26,13 +52,15 @@ function conceptPerformance(result) {
 }
 
 function buildItems(result) {
-  return conceptPerformance(result).sort((a, b) => a.percentage - b.percentage).map((item) => ({
-    topic: item.topic,
-    concept: item.concept,
-    priority: item.percentage < 60 ? 'high' : item.percentage < 80 ? 'medium' : 'low',
-    status: 'not_started',
-    recommendedAction: item.percentage < 60 ? 'Learn concept and practice questions' : item.percentage < 80 ? 'Review the concept and complete targeted practice' : 'Maintain mastery with challenge questions',
-  }));
+  return conceptPerformance(result)
+    .sort((a, b) => a.percentage - b.percentage)
+    .map((item) => ({
+      topic: item.topic,
+      concept: item.concept,
+      priority: priorityFor(item.percentage),
+      status: 'not_started',
+      recommendedAction: actionFor(item.percentage),
+    }));
 }
 
 async function generateLearningPath({ resultId, userId }) {
@@ -52,4 +80,4 @@ async function getNextLearningItem(userId) {
   return path.items.find((item) => item.status !== 'completed' && item.priority === 'high') || path.items.find((item) => item.status !== 'completed') || null;
 }
 
-module.exports = { generateLearningPath, getLearningPath, getNextLearningItem, getOwnedResult, conceptPerformance, levelFor };
+module.exports = { generateLearningPath, getLearningPath, getNextLearningItem, getOwnedResult, conceptPerformance, levelFor, priorityFor, actionFor };
