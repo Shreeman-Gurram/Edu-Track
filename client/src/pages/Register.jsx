@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { register } from '../api/authApi'
+import { setAuthToken } from '../services/apiClient'
 
 function Register() {
   const navigate = useNavigate()
@@ -12,6 +14,7 @@ function Register() {
   })
 
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (event) => {
     setFormData({
@@ -22,7 +25,7 @@ function Register() {
     setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (
@@ -45,16 +48,20 @@ function Register() {
       return
     }
 
-    // Temporary frontend registration
-    localStorage.setItem(
-      'edutrackUser',
-      JSON.stringify({
+    setIsSubmitting(true)
+    try {
+      const { token } = await register({
         name: formData.name,
         email: formData.email,
+        password: formData.password,
       })
-    )
-
-    navigate('/dashboard')
+      setAuthToken(token)
+      navigate('/dashboard')
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -209,8 +216,9 @@ function Register() {
             <button
               type="submit"
               className="btn btn-primary w-100 auth-button"
+              disabled={isSubmitting}
             >
-              Create Account
+              {isSubmitting ? 'Creating Account…' : 'Create Account'}
             </button>
 
           </form>

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { login } from '../api/authApi'
+import { setAuthToken } from '../services/apiClient'
 
 function Login() {
   const navigate = useNavigate()
@@ -10,6 +12,7 @@ function Login() {
   })
 
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (event) => {
     setFormData({
@@ -20,7 +23,7 @@ function Login() {
     setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!formData.email || !formData.password) {
@@ -28,15 +31,16 @@ function Login() {
       return
     }
 
-    // Temporary frontend authentication
-    localStorage.setItem(
-      'edutrackUser',
-      JSON.stringify({
-        email: formData.email,
-      })
-    )
-
-    navigate('/dashboard')
+    setIsSubmitting(true)
+    try {
+      const { token } = await login(formData)
+      setAuthToken(token)
+      navigate('/dashboard')
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -156,8 +160,9 @@ function Login() {
             <button
               type="submit"
               className="btn btn-primary w-100 auth-button"
+              disabled={isSubmitting}
             >
-              Sign In
+              {isSubmitting ? 'Signing In…' : 'Sign In'}
             </button>
 
           </form>

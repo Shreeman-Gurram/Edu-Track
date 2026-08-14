@@ -1,271 +1,34 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../api/authApi'
+
 function Dashboard() {
   const navigate = useNavigate()
-  const stats = [
-    {
-      title: 'Overall Progress',
-      value: '68%',
-      description: 'Learning completed',
-    },
-    {
-      title: 'Assessments',
-      value: '8',
-      description: 'Completed',
-    },
-    {
-      title: 'Topics',
-      value: '12',
-      description: 'Completed',
-    },
-  ]
-
-  const weakAreas = [
-    {
-      subject: 'Fractions',
-      score: 45,
-    },
-    {
-      subject: 'Geometry',
-      score: 52,
-    },
-    {
-      subject: 'Algebra',
-      score: 61,
-    },
-  ]
-
-  const activities = [
-    'Completed Algebra Assessment',
-    'Practiced Fractions',
-    'Completed Geometry Quiz',
-  ]
-
-  return (
-    <div>
-
-      {/* Header */}
-      <div className="mb-4">
-
-        <h1 className="dashboard-title">
-          Good morning, Student 👋
-        </h1>
-
-        <p className="text-muted">
-          Continue your learning journey and improve your skills.
-        </p>
-
-      </div>
-
-      {/* Statistics */}
-      <div className="row g-3 mb-4">
-
-        {stats.map((stat) => (
-          <div
-            className="col-12 col-md-4"
-            key={stat.title}
-          >
-            <div className="card dashboard-card h-100">
-
-              <div className="card-body">
-
-                <p className="text-muted mb-2">
-                  {stat.title}
-                </p>
-
-                <h2 className="stat-value">
-                  {stat.value}
-                </h2>
-
-                <small className="text-muted">
-                  {stat.description}
-                </small>
-
-              </div>
-
-            </div>
-          </div>
-        ))}
-
-      </div>
-      <div className="d-flex gap-2 mb-4">
-        <button
-          className="btn btn-primary"
-          onClick={() => window.location.href = '/assessment'}
-        >
-          Take Assessment
-        </button>
-
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => window.location.href = '/subjects'}
-        >
-          Explore Subjects
-        </button>
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => navigate('/progress')}
-        >
-          View My Progress
-        </button>
-      </div>
-      {/* Continue Learning */}
-      <div className="card dashboard-card mb-4">
-
-        <div className="card-body">
-
-          <div className="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-              <h4 className="mb-1">
-                Continue Learning
-              </h4>
-
-              <p className="text-muted mb-0">
-                Pick up where you left off.
-              </p>
-            </div>
-
-            <span className="badge text-bg-primary">
-              In Progress
-            </span>
-
-          </div>
-
-          <div className="learning-item">
-
-            <div className="d-flex justify-content-between mb-2">
-
-              <strong>
-                Fractions
-              </strong>
-
-              <span className="text-muted">
-                68%
-              </span>
-
-            </div>
-
-            <div className="progress mb-3">
-              <div
-                className="progress-bar"
-                style={{ width: '68%' }}
-              />
-            </div>
-
-            <button
-              className="btn btn-primary"
-              onClick={() => window.location.href = '/learning-path'}
-            >       
-            Continue Learning
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* Weak Areas */}
-      <div className="mb-4">
-
-        <div className="mb-3">
-
-          <h4 className="mb-1">
-            Needs Improvement
-          </h4>
-
-          <p className="text-muted mb-0">
-            Topics where you can improve your score.
-          </p>
-
-        </div>
-
-        <div className="row g-3">
-
-          {weakAreas.map((area) => (
-            <div
-              className="col-12 col-md-4"
-              key={area.subject}
-            >
-
-              <div className="card dashboard-card h-100">
-
-                <div className="card-body">
-
-                  <div className="d-flex justify-content-between mb-3">
-
-                    <strong>
-                      {area.subject}
-                    </strong>
-
-                    <span className="text-muted">
-                      {area.score}%
-                    </span>
-
-                  </div>
-
-                  <div className="progress">
-
-                    <div
-                      className="progress-bar bg-warning"
-                      style={{
-                        width: `${area.score}%`,
-                      }}
-                    />
-
-                  </div>
-
-                  <button className="btn btn-outline-primary btn-sm mt-3">
-                    Practice
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-          ))}
-
-        </div>
-
-      </div>
-
-      {/* Recent Activity */}
-      <div className="card dashboard-card">
-
-        <div className="card-body">
-
-          <h4 className="mb-3">
-            Recent Activity
-          </h4>
-
-          <div className="activity-list">
-
-            {activities.map((activity, index) => (
-              <div
-                className="activity-item"
-                key={index}
-              >
-
-                <span className="activity-check">
-                  ✓
-                </span>
-
-                <span>
-                  {activity}
-                </span>
-
-              </div>
-            ))}
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  )
+  const [user, setUser] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    getCurrentUser().then(({ user: currentUser }) => {
+      if (active) setUser(currentUser)
+    }).catch((requestError) => {
+      if (active) setError(requestError.message)
+    })
+    return () => { active = false }
+  }, [])
+
+  if (error) return <div className="alert alert-danger">Unable to load your profile: {error}</div>
+  if (!user) return <div className="text-muted">Loading your dashboard…</div>
+
+  return <div>
+    <div className="mb-4"><h1 className="dashboard-title">Welcome, {user.name}</h1><p className="text-muted">Continue your learning journey and improve your skills.</p></div>
+    <div className="card dashboard-card mb-4"><div className="card-body p-4"><h4 className="mb-3">Your Profile</h4><div className="row g-3">
+      <div className="col-12 col-md-6"><span className="text-muted d-block">Email</span><strong>{user.email}</strong></div>
+      <div className="col-6 col-md-3"><span className="text-muted d-block">Grade</span><strong>{user.grade || 'Not set'}</strong></div>
+      <div className="col-6 col-md-3"><span className="text-muted d-block">Role</span><strong className="text-capitalize">{user.role}</strong></div>
+    </div></div></div>
+    <div className="d-flex gap-2"><button className="btn btn-primary" onClick={() => navigate('/assessment')}>Take Assessment</button><button className="btn btn-outline-primary" onClick={() => navigate('/subjects')}>Explore Subjects</button></div>
+  </div>
 }
 
 export default Dashboard
