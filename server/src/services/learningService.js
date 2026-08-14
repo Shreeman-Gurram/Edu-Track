@@ -40,15 +40,46 @@ async function getOwnedResult(resultId, userId) {
 
 function conceptPerformance(result) {
   const stats = {};
+
+  const assessmentTopic =
+    result.assessment?.topic || 'General';
+
   result.answers.forEach((answer) => {
     const question = answer.question;
+
     if (!question) return;
-    const concept = question.concept || question.topic || 'General';
-    if (!stats[concept]) stats[concept] = { topic: question.topic || result.assessment.topic || 'General', correct: 0, total: 0, difficulty: question.difficulty || 'medium' };
+
+    const concept =
+      question.concept ||
+      question.topic ||
+      'General';
+
+    if (!stats[concept]) {
+      stats[concept] = {
+        topic: question.topic || assessmentTopic,
+        correct: 0,
+        total: 0,
+        difficulty: question.difficulty || 'medium',
+      };
+    }
+
     stats[concept].total += 1;
-    if (answer.correct) stats[concept].correct += 1;
+
+    if (answer.correct) {
+      stats[concept].correct += 1;
+    }
   });
-  return Object.entries(stats).map(([concept, value]) => ({ ...value, concept, percentage: Number((value.correct / value.total * 100).toFixed(2)), level: levelFor(value.correct / value.total * 100) }));
+
+  return Object.entries(stats).map(([concept, value]) => ({
+    ...value,
+    concept,
+    percentage: Number(
+      ((value.correct / value.total) * 100).toFixed(2)
+    ),
+    level: levelFor(
+      (value.correct / value.total) * 100
+    ),
+  }));
 }
 
 function buildItems(result) {
@@ -63,10 +94,50 @@ function buildItems(result) {
     }));
 }
 
+function adaptLearningItems(previousItems, newItems) {
+  const previousMap = new Map(
+    previousItems.map((item) => [
+      `${item.topic}::${item.concept}`,
+      item,
+    ])
+  );
+
+  return newItems.map((newItem) => {
+    const key = `${newItem.topic}::${newItem.concept}`;
+    const previousItem = previousMap.get(key);
+
+    if (!previousItem) {
+      return newItem;
+    }
+
+    return {
+      ...newItem,
+      status: previousItem.status,
+    };
+  });
+}
+
 async function generateLearningPath({ resultId, userId }) {
   const result = await getOwnedResult(resultId, userId);
-  const items = buildItems(result);
-  const learningPath = await LearningPath.findOneAndUpdate({ user: userId }, { $set: { items, status: 'active' } }, { new: true, upsert: true, setDefaultsOnInsert: true });
+  const newItems = buildItems(result);
+  const existingPath = await getLearningPath(userId);
+  const items = existingPath
+    ? adaptLearningItems(existingPath.items || [], newItems)
+    : newItems;
+  const learningPath = await LearningPath.findOneAndUpdate(
+    { user: userId },
+    {
+      $set: {
+        items,
+        status: 'active',
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    }
+  );
   return learningPath;
 }
 
@@ -74,10 +145,26 @@ async function getLearningPath(userId) {
   return LearningPath.findOne({ user: userId, status: 'active' });
 }
 
-async function getNextLearningItem(userId) {
-  const path = await getLearningPath(userId);
-  if (!path) return null;
-  return path.items.find((item) => item.status !== 'completed' && item.priority === 'high') || path.items.find((item) => item.status !== 'completed') || null;
+function getPriorityRank(priority) {
+  if (priority === 'high') return 1;
+  if (priority === 'medium') return 2;
+  return 3;
 }
 
-module.exports = { generateLearningPath, getLearningPath, getNextLearningItem, getOwnedResult, conceptPerformance, levelFor, priorityFor, actionFor };
+async function getNextLearningItem(userId) {
+  const path = await getLearningPath(userId);
+  if (!path || !path.items.length) {
+    return null;
+  }
+  const incompleteItems = path.items.filter(
+    (item) => item.status !== 'completed'
+  );
+  if (!incompleteItems.length) {
+    return null;
+  }
+  return [...incompleteItems].sort(
+    (a, b) => getPriorityRank(a.priority) - getPriorityRank(b.priority)
+  )[0];
+}
+
+module.exports = { generateLearningPath, getLearningPath, getNextLearningItem, getOwnedResult, conceptPerformance, levelFor, priorityFor, actionFor, adaptLearningItems };
