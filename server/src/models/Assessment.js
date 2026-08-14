@@ -1,39 +1,16 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const assessmentSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const assessmentSchema = new Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true
-    },
-
-    grade: {
-      type: Number,
-      required: true
-    },
-
-    subject: {
-      type: String,
-      required: true,
-      trim: true
-    },
-
-    questions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Question"
-      }
-    ],
-
-    duration: {
-      type: Number,
-      required: true
-    }
+    title: { type: String, required: true, trim: true },
+    grade: { type: String },
+    subject: { type: String },
+    topic: { type: String },
+    questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
   },
-  {
-    timestamps: true
-  }
+  { timestamps: { createdAt: 'createdAt' } }
 );
 
-module.exports = mongoose.model("Assessment", assessmentSchema);
+module.exports = mongoose.model('Assessment', assessmentSchema);

@@ -1,64 +1,26 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const resultSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const answerSchema = new Schema({
+  question: { type: Schema.Types.ObjectId, ref: 'Question' },
+  selected: { type: String },
+  correct: { type: Boolean },
+});
+
+const resultSchema = new Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-
-    assessmentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Assessment",
-      required: true
-    },
-
-    score: {
-      type: Number,
-      required: true
-    },
-
-    totalMarks: {
-      type: Number,
-      required: true
-    },
-
-    topicPerformance: [
-      {
-        topic: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Topic",
-          required: true
-        },
-
-        correct: {
-          type: Number,
-          default: 0
-        },
-
-        total: {
-          type: Number,
-          default: 0
-        },
-
-        percentage: {
-          type: Number,
-          default: 0
-        }
-      }
-    ],
-
-    weakTopics: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Topic"
-      }
-    ]
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    assessment: { type: Schema.Types.ObjectId, ref: 'Assessment', required: true },
+    score: { type: Number, default: 0 },
+    totalQuestions: { type: Number, default: 0 },
+    answers: { type: [answerSchema], default: [] },
+    topicPerformance: { type: Schema.Types.Mixed, default: {} },
+    weakConcepts: { type: [String], default: [] },
+    offlineActivityId: { type: String, trim: true, sparse: true, unique: true },
+    completedAt: { type: Date, default: Date.now },
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("Result", resultSchema);
+module.exports = mongoose.model('Result', resultSchema);
