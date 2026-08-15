@@ -1,71 +1,114 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getLearningPath } from '../api/learningApi'
 
-const lessons = [
-  {
-    id: 1,
-    title: 'What are Fractions?',
-    content:
-      'A fraction represents a part of a whole. It is written using a numerator and a denominator.',
-    keyPoints: [
-      'The numerator is the number above the line.',
-      'The denominator is the number below the line.',
-      'Fractions can represent parts of a whole.',
-    ],
-    question: 'What is 1/2 + 1/2?',
-    options: ['1', '2', '1/4', '3/4'],
-    answer: '1',
-  },
-  {
-    id: 2,
-    title: 'Adding Fractions',
-    content:
-      'When fractions have the same denominator, add their numerators and keep the denominator the same.',
-    keyPoints: [
-      'Keep the denominator the same.',
-      'Add the numerators.',
-      'Simplify the answer when necessary.',
-    ],
-    question: 'What is 1/4 + 1/4?',
-    options: ['1/2', '1/4', '2', '3/4'],
-    answer: '1/2',
-  },
-  {
-    id: 3,
-    title: 'Comparing Fractions',
-    content:
-      'Fractions can be compared to determine which represents a larger or smaller part of a whole.',
-    keyPoints: [
-      'Compare fractions using common denominators.',
-      'A larger numerator means a larger fraction when denominators are equal.',
-      'Use visual models when needed.',
-    ],
-    question: 'Which fraction is larger?',
-    options: ['1/4', '3/4', '1/8', '1/10'],
-    answer: '3/4',
-  },
-]
+function buildKeyPoints(item) {
+  const points = []
+  if (item.recommendedAction) points.push(item.recommendedAction)
+  if (item.trend === 'declining')
+    points.push('Your score on this concept has dropped — focus carefully before moving on.')
+  if (item.trend === 'improving')
+    points.push('You are improving on this concept — keep up the consistent practice.')
+  if ((item.latestScore || 0) < 40)
+    points.push('Start with the basics and make sure the core idea is clear before practising.')
+  else if ((item.latestScore || 0) < 60)
+    points.push('You have a partial understanding — review examples and try more questions.')
+  else if ((item.latestScore || 0) < 80)
+    points.push('You are close to mastering this — a few more practice rounds should do it.')
+  else
+    points.push('You are strong here — challenge yourself with harder variations.')
+  points.push(`Your current score on this concept: ${Math.round(item.latestScore || 0)}%`)
+  return points
+}
+
+function priorityColour(priority) {
+  if (priority === 'high')   return 'danger'
+  if (priority === 'medium') return 'warning'
+  return 'success'
+}
+
+function itemsToLessons(items) {
+  return items.map((item) => ({
+    id:        item._id || item.concept,
+    title:     item.concept || item.topic,
+    topic:     item.topic,
+    content:   item.recommendedAction || 'Review this concept and complete the practice questions below.',
+    keyPoints: buildKeyPoints(item),
+    priority:  item.priority,
+    score:     Math.round(item.latestScore || 0),
+    trend:     item.trend,
+    status:    item.status,
+  }))
+}
 
 function LearningContent() {
   const navigate = useNavigate()
+  const { state } = useLocation()
 
-  const [currentLesson, setCurrentLesson] = useState(0)
+  const [lessons, setLessons]               = useState([])
+  const [assessmentTitle, setAssessmentTitle] = useState('')
+  const [subject, setSubject]               = useState('')
+  const [loading, setLoading]               = useState(true)
+  const [error, setError]                   = useState('')
+  const [currentLesson, setCurrentLesson]   = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState('')
-  const [showResult, setShowResult] = useState(false)
+  const [showResult, setShowResult]         = useState(false)
 
-  const lesson = lessons[currentLesson]
+  useEffect(() => {
+    // If navigated from LearningPath with specific path data, use it directly
+    if (state?.pathItems && state.pathItems.length) {
+      setLessons(itemsToLessons(state.pathItems))
+      setAssessmentTitle(state.assessmentTitle || '')
+      setSubject(state.subject || '')
+      setLoading(false)
+      return
+    }
 
-  const progress =
-    ((currentLesson + 1) / lessons.length) * 100
+    // Fallback: load the most recent active path from the API
+    let active = true
+    getLearningPath()
+      .then(({ learningPath }) => {
+        if (!active) return
+        if (!learningPath || !learningPath.items || !learningPath.items.length) {
+          setLoading(false)
+          return
+        }
+        setLessons(itemsToLessons(learningPath.items))
+        setAssessmentTitle(learningPath.assessment?.title || '')
+        setSubject(learningPath.assessment?.subject || '')
+      })
+      .catch((err) => { if (active) setError(err.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  if (loading) return <div className="text-muted container py-4">Loading learning content…</div>
+
+  if (!lessons.length) return (
+    <div className="container py-4">
+      <button
+        className="btn btn-link text-decoration-none px-0 mb-4"
+        onClick={() => navigate('/learning-path')}
+      >
+        ← Back to Learning Path
+      </button>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <div className="alert alert-info">
+        No learning content yet.{' '}
+        <button className="btn btn-link p-0" onClick={() => navigate('/assessment')}>
+          Take an assessment
+        </button>{' '}
+        to generate your personalised lessons.
+      </div>
+    </div>
+  )
+
+  const lesson   = lessons[currentLesson]
+  const progress = ((currentLesson + 1) / lessons.length) * 100
 
   const handleAnswer = (option) => {
     setSelectedAnswer(option)
     setShowResult(false)
-  }
-
-  const checkAnswer = () => {
-    if (!selectedAnswer) return
-    setShowResult(true)
   }
 
   const nextLesson = () => {
@@ -98,15 +141,15 @@ function LearningContent() {
       {/* Header */}
       <div className="mb-4">
         <span className="badge bg-primary-subtle text-primary mb-2">
-          Mathematics
+          {subject || lesson.topic}
         </span>
 
         <h1 className="fw-bold mb-2">
-          {lesson.title}
+          {assessmentTitle || lesson.title}
         </h1>
 
         <p className="text-muted mb-0">
-          Fractions • Lesson {currentLesson + 1} of {lessons.length}
+          Concept {currentLesson + 1} of {lessons.length}
         </p>
       </div>
 
@@ -115,25 +158,40 @@ function LearningContent() {
         <div className="card-body p-4">
 
           <div className="d-flex justify-content-between mb-2">
-            <span className="fw-semibold">
-              Lesson Progress
-            </span>
-
-            <span className="text-muted">
-              {Math.round(progress)}%
-            </span>
+            <span className="fw-semibold">Learning Progress</span>
+            <span className="text-muted">{Math.round(progress)}%</span>
           </div>
 
-          <div
-            className="progress"
-            style={{ height: '10px' }}
-          >
-            <div
-              className="progress-bar"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="progress" style={{ height: '10px' }}>
+            <div className="progress-bar" style={{ width: `${progress}%` }} />
           </div>
 
+        </div>
+      </div>
+
+      {/* Concept Score + Priority */}
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body p-4 d-flex gap-3 align-items-center flex-wrap">
+          <div>
+            <span className="text-muted small d-block">Concept</span>
+            <strong>{lesson.title}</strong>
+          </div>
+          <div>
+            <span className="text-muted small d-block">Your Score</span>
+            <strong className="fs-5">{lesson.score}%</strong>
+          </div>
+          <div>
+            <span className="text-muted small d-block">Priority</span>
+            <span className={`badge text-bg-${priorityColour(lesson.priority)}`}>
+              {lesson.priority}
+            </span>
+          </div>
+          <div>
+            <span className="text-muted small d-block">Trend</span>
+            <span className="fw-semibold text-capitalize">
+              {(lesson.trend || '').replace(/_/g, ' ')}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -141,13 +199,9 @@ function LearningContent() {
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4 p-md-5">
 
-          <h2 className="fw-bold mb-3">
-            {lesson.title}
-          </h2>
+          <h2 className="fw-bold mb-3">{lesson.title}</h2>
 
-          <p className="fs-5 text-muted">
-            {lesson.content}
-          </p>
+          <p className="fs-5 text-muted">{lesson.content}</p>
 
         </div>
       </div>
@@ -156,23 +210,13 @@ function LearningContent() {
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4 p-md-5">
 
-          <h3 className="fw-bold mb-4">
-            Key Points
-          </h3>
+          <h3 className="fw-bold mb-4">Key Points</h3>
 
           <div>
             {lesson.keyPoints.map((point, index) => (
-              <div
-                key={index}
-                className="learning-point mb-3"
-              >
-                <span className="point-icon">
-                  ✓
-                </span>
-
-                <span>
-                  {point}
-                </span>
+              <div key={index} className="learning-point mb-3">
+                <span className="point-icon">✓</span>
+                <span>{point}</span>
               </div>
             ))}
           </div>
@@ -180,75 +224,52 @@ function LearningContent() {
         </div>
       </div>
 
-      {/* Practice Question */}
+      {/* Self-check */}
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4 p-md-5">
 
           <div className="mb-4">
-            <span className="badge bg-primary mb-2">
-              Practice
-            </span>
-
-            <h3 className="fw-bold">
-              {lesson.question}
-            </h3>
+            <span className="badge bg-primary mb-2">Self Check</span>
+            <h3 className="fw-bold">Do you feel confident about "{lesson.title}"?</h3>
           </div>
 
-          {/* Options */}
           <div className="mb-4">
-
-            {lesson.options.map((option) => (
-
+            {['Yes, I understand it', 'Somewhat — need more practice', 'No — I need to review again'].map((option) => (
               <button
                 key={option}
                 type="button"
-                className={`lesson-option ${
-                  selectedAnswer === option
-                    ? 'selected'
-                    : ''
-                }`}
+                className={`lesson-option ${selectedAnswer === option ? 'selected' : ''}`}
                 onClick={() => handleAnswer(option)}
               >
-                <span className="option-radio">
-                  {selectedAnswer === option
-                    ? '●'
-                    : '○'}
-                </span>
-
+                <span className="option-radio">{selectedAnswer === option ? '●' : '○'}</span>
                 <span>{option}</span>
               </button>
-
             ))}
-
           </div>
 
-          {/* Check Answer */}
           <button
             className="btn btn-primary"
             disabled={!selectedAnswer}
-            onClick={checkAnswer}
+            onClick={() => setShowResult(true)}
           >
-            Check Answer
+            Submit
           </button>
 
-          {/* Result */}
           {showResult && (
             <div className="mt-4">
-
-              {selectedAnswer === lesson.answer ? (
+              {selectedAnswer === 'Yes, I understand it' ? (
                 <div className="alert alert-success mb-0">
-                  <strong>Correct! 🎉</strong>
-                  <br />
-                  Great job. You're ready to continue.
+                  <strong>Great! 🎉</strong> Move on to the next concept when you are ready.
+                </div>
+              ) : selectedAnswer === 'Somewhat — need more practice' ? (
+                <div className="alert alert-warning mb-0">
+                  <strong>Keep going.</strong> Re-read the key points and try the next concept — practice makes it stick.
                 </div>
               ) : (
                 <div className="alert alert-danger mb-0">
-                  <strong>Not quite.</strong>
-                  <br />
-                  Review the concept and try again.
+                  <strong>No problem.</strong> Review the content above carefully, then retake the assessment to rebuild your score.
                 </div>
               )}
-
             </div>
           )}
 

@@ -12,6 +12,10 @@ function Sidebar() {
       path: '/subjects',
     },
     {
+      name: 'Learning Path',
+      path: '/learning-path',
+    },
+    {
       name: 'Progress',
       path: '/progress',
     },

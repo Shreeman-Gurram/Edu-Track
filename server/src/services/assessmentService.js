@@ -6,6 +6,7 @@ const Result = require('../models/Result');
 const User = require('../models/User');
 const Question = require('../models/Question');
 const { updateProgressFromResult } = require('./progressService');
+const { generateLearningPath } = require('./learningService');
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -63,7 +64,9 @@ function buildTopicPerformance(questions, answerLookup) {
     topicStats[topicKey].total += 1;
 
     const submitted = answerLookup.get(question._id.toString());
-    const isCorrect = normalizeAnswer(submitted) === normalizeAnswer(question.correctAnswer);
+    const isCorrect =
+      normalizeAnswer(submitted) ===
+      normalizeAnswer(question.correctAnswer);
 
     if (isCorrect) {
       topicStats[topicKey].correct += 1;
@@ -76,11 +79,57 @@ function buildTopicPerformance(questions, answerLookup) {
     topicPerformance[topicKey] = {
       correct: topicStats[topicKey].correct,
       total: topicStats[topicKey].total,
-      percentage: toPercentage(topicStats[topicKey].correct, topicStats[topicKey].total),
+      percentage: toPercentage(
+        topicStats[topicKey].correct,
+        topicStats[topicKey].total
+      ),
     };
   });
 
   return topicPerformance;
+}
+
+
+function buildDifficultyPerformance(questions, answerLookup) {
+  const difficultyStats = {};
+
+  questions.forEach((question) => {
+    const difficultyKey = question.difficulty || 'medium';
+
+    if (!difficultyStats[difficultyKey]) {
+      difficultyStats[difficultyKey] = {
+        correct: 0,
+        total: 0,
+      };
+    }
+
+    difficultyStats[difficultyKey].total += 1;
+
+    const submitted =
+      answerLookup.get(question._id.toString()) || '';
+
+    const isCorrect =
+      normalizeAnswer(submitted) ===
+      normalizeAnswer(question.correctAnswer);
+
+    if (isCorrect) {
+      difficultyStats[difficultyKey].correct += 1;
+    }
+  });
+
+  const difficultyPerformance = {};
+
+  Object.keys(difficultyStats).forEach((difficultyKey) => {
+    const stats = difficultyStats[difficultyKey];
+
+    difficultyPerformance[difficultyKey] = {
+      correct: stats.correct,
+      total: stats.total,
+      percentage: toPercentage(stats.correct, stats.total),
+    };
+  });
+
+  return difficultyPerformance;
 }
 
 function buildWeakConcepts(questions, answerLookup) {
@@ -173,7 +222,7 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
     throw createError('Invalid assessment ID', 400);
   }
 
-  if (!Array.isArray(answers) || answers.length === 0) {
+  if (!Array.isArray(answers)) {
     throw createError('Answers are required', 400);
   }
 
@@ -222,12 +271,16 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
       throw createError('Duplicate question IDs are not allowed', 400);
     }
 
-    if (typeof item.answer !== 'string' || !item.answer.trim()) {
-      throw createError('Each answer must include a non-empty answer value', 400);
-    }
+    if (
+      item.answer !== undefined &&
+      item.answer !== null &&
+      typeof item.answer !== 'string'
+  ) {
+      throw createError('Answer must be a string', 400);
+  }
 
     submittedQuestionIdSet.add(item.questionId);
-    answerLookup.set(item.questionId, item.answer);
+    answerLookup.set(item.questionId, item.answer || '');
   });
 
   const hasInvalidQuestionId = [...submittedQuestionIdSet].some(
@@ -238,14 +291,12 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
     throw createError('One or more submitted questions do not belong to this assessment', 400);
   }
 
-  if (submittedQuestionIdSet.size !== assessmentQuestionIdSet.size) {
-    throw createError('Missing answers for one or more questions', 400);
-  }
+  
 
   let score = 0;
   const answerDetails = questions.map((question) => {
     const questionId = question._id.toString();
-    const selectedAnswer = answerLookup.get(questionId);
+    const selectedAnswer = answerLookup.get(questionId) || '';
     const isCorrect = normalizeAnswer(selectedAnswer) === normalizeAnswer(question.correctAnswer);
 
     if (isCorrect) {
@@ -262,31 +313,48 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
   const totalQuestions = questions.length;
   const percentage = toPercentage(score, totalQuestions);
   const topicPerformance = buildTopicPerformance(questions, answerLookup);
+  const difficultyPerformance = buildDifficultyPerformance(questions, answerLookup);
   const weakConcepts = buildWeakConcepts(questions, answerLookup);
 
   const savedResult = await Result.create({
-    user: user._id,
-    assessment: assessment._id,
-    score,
-    totalQuestions,
-    answers: answerDetails,
-    topicPerformance,
-    weakConcepts,
-    offlineActivityId,
-    completedAt: completedAt || undefined,
-  });
+  user: user._id,
+  assessment: assessment._id,
+  score,
+  totalQuestions,
+  answers: answerDetails,
+  topicPerformance,
+  difficultyPerformance,
+  weakConcepts,
+  offlineActivityId,
+  completedAt: completedAt || undefined,
+});
 
   await updateProgressFromResult(savedResult);
 
+  // Auto-generate a learning path for this result.
+  // Failures here must not break the submission response.
+  let learningPathId = null;
+  try {
+    const learningPath = await generateLearningPath({
+      resultId: savedResult._id,
+      userId: user._id,
+    });
+    learningPathId = learningPath._id.toString();
+  } catch (lpError) {
+    console.error('Learning path generation failed (non-fatal):', lpError.message);
+  }
+
   return {
-    id: savedResult._id.toString(),
-    score,
-    totalQuestions,
-    percentage,
-    topicPerformance,
-    weakConcepts,
-    completedAt: savedResult.completedAt,
-  };
+  id: savedResult._id.toString(),
+  score,
+  totalQuestions,
+  percentage,
+  topicPerformance,
+  difficultyPerformance,
+  weakConcepts,
+  completedAt: savedResult.completedAt,
+  learningPathId,
+};
 }
 
 function normalizeOptions(options) {
