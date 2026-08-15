@@ -1,38 +1,69 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getProgress } from '../api/progressApi'
 
-const topicProgress = [
-  {
-    id: 1,
-    name: 'Fractions',
-    subject: 'Mathematics',
-    progress: 75,
-    status: 'In Progress',
-  },
-  {
-    id: 2,
-    name: 'Algebra',
-    subject: 'Mathematics',
-    progress: 60,
-    status: 'In Progress',
-  },
-  {
-    id: 3,
-    name: 'Geometry',
-    subject: 'Mathematics',
-    progress: 90,
-    status: 'Almost Complete',
-  },
-  {
-    id: 4,
-    name: 'Statistics',
-    subject: 'Mathematics',
-    progress: 40,
-    status: 'Needs Practice',
-  },
-]
+function masteryStatus(level) {
+  if (level === 'weak')           return 'Needs Practice'
+  if (level === 'needs_practice') return 'In Progress'
+  return 'Strong'
+}
 
 function Progress() {
   const navigate = useNavigate()
+  const [summary, setSummary]           = useState(null)
+  const [topicProgress, setTopicProgress] = useState([])
+  const [latestAssessment, setLatestAssessment] = useState(null)
+  const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState('')
+
+  useEffect(() => {
+    let active = true
+    getProgress()
+      .then(({ summary: s, progress: records }) => {
+        if (!active) return
+        setSummary(s)
+
+        // Collapse concept-level records into topic-level for display
+        const topicMap = new Map()
+        records.forEach((r) => {
+          const key = `${r.subject}::${r.topic}`
+          const existing = topicMap.get(key)
+          if (!existing) {
+            topicMap.set(key, {
+              id:       key,
+              name:     r.topic,
+              subject:  r.subject,
+              progress: r.completionPercentage,
+              status:   masteryStatus(r.masteryLevel),
+              count:    1,
+              total:    r.completionPercentage,
+            })
+          } else {
+            existing.count += 1
+            existing.total += r.completionPercentage
+            existing.progress = Math.round(existing.total / existing.count)
+            existing.status   = masteryStatus(r.masteryLevel)
+          }
+        })
+        setTopicProgress([...topicMap.values()])
+
+        // Latest assessment = most recently updated record
+        if (records.length) {
+          const latest = [...records].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0]
+          setLatestAssessment({ subject: latest.subject, topic: latest.topic })
+        }
+      })
+      .catch((err) => { if (active) setError(err.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  if (loading) return <div className="text-muted container py-4">Loading your progress…</div>
+
+  const overallPct   = summary ? Math.round(summary.overallPercentage) : 0
+  const strongCount  = summary ? summary.strongTopics  : 0
+  const weakCount    = summary ? summary.weakTopics    : 0
+  const totalTopics  = summary ? summary.totalTopics   : 0
 
   return (
     <div className="container py-4 progress-page">
@@ -77,11 +108,11 @@ function Progress() {
               </p>
 
               <h2 className="fw-bold mb-0">
-                78%
+                {overallPct}%
               </h2>
 
               <small className="text-success">
-                ↑ 8% from your last assessment
+                Across all your assessments
               </small>
 
             </div>
@@ -98,22 +129,22 @@ function Progress() {
               </div>
 
               <p className="text-muted mb-1">
-                Topics Completed
+                Strong Topics
               </p>
 
               <h2 className="fw-bold mb-0">
-                8 / 12
+                {strongCount} / {totalTopics}
               </h2>
 
               <small className="text-muted">
-                4 topics remaining
+                {weakCount} topic{weakCount !== 1 ? 's' : ''} need{weakCount === 1 ? 's' : ''} practice
               </small>
 
             </div>
           </div>
         </div>
 
-        {/* Lessons */}
+        {/* Weak topics */}
         <div className="col-12 col-md-4">
           <div className="card progress-summary-card h-100">
             <div className="card-body p-4">
@@ -123,15 +154,15 @@ function Progress() {
               </div>
 
               <p className="text-muted mb-1">
-                Lessons Completed
+                Topics Tracked
               </p>
 
               <h2 className="fw-bold mb-0">
-                24 / 30
+                {totalTopics}
               </h2>
 
               <small className="text-muted">
-                6 lessons remaining
+                From your assessment results
               </small>
 
             </div>
@@ -155,7 +186,11 @@ function Progress() {
             </p>
           </div>
 
-          {topicProgress.map((topic) => (
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          {!topicProgress.length
+            ? <p className="text-muted mb-0">No progress recorded yet. Take an assessment to get started.</p>
+            : topicProgress.map((topic) => (
 
             <div
               key={topic.id}
@@ -224,44 +259,46 @@ function Progress() {
                   </h6>
 
                   <small className="text-muted">
-                    Mathematics Assessment
+                    {latestAssessment
+                      ? `${latestAssessment.subject} — ${latestAssessment.topic}`
+                      : 'No assessments yet'}
                   </small>
                 </div>
 
                 <strong>
-                  78%
+                  {overallPct}%
                 </strong>
               </div>
 
               <div className="activity-item">
                 <div>
                   <h6 className="fw-semibold mb-1">
-                    Lessons Completed
+                    Topics Practised
                   </h6>
 
                   <small className="text-muted">
-                    This learning period
+                    Across all your assessments
                   </small>
                 </div>
 
                 <strong>
-                  24
+                  {totalTopics}
                 </strong>
               </div>
 
               <div className="activity-item">
                 <div>
                   <h6 className="fw-semibold mb-1">
-                    Current Streak
+                    Strong Topics
                   </h6>
 
                   <small className="text-muted">
-                    Keep learning every day!
+                    Topics you have mastered
                   </small>
                 </div>
 
                 <strong>
-                  🔥 5 days
+                  ✅ {strongCount}
                 </strong>
               </div>
 
