@@ -48,6 +48,26 @@ async function getLearningPath(req, res) {
   }
 }
 
+// Returns all learning paths for the authenticated student.
+async function getLearningPaths(req, res) {
+  try {
+    const learningPaths = await learningService.getLearningPaths(
+      req.user._id
+    );
+
+    return res.status(200).json({
+      success: true,
+      learningPaths,
+    });
+  } catch (error) {
+    return handleError(
+      res,
+      error,
+      'Failed to retrieve learning path history'
+    );
+  }
+}
+
 async function getNextLearningItem(req, res) {
   try {
     const item = await learningService.getNextLearningItem(
@@ -70,5 +90,6 @@ async function getNextLearningItem(req, res) {
 module.exports = {
   generateLearningPath,
   getLearningPath,
+  getLearningPaths,
   getNextLearningItem,
 };

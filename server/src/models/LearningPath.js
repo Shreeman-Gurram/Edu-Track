@@ -47,8 +47,10 @@ trend: {
 
 const learningPathSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    items: { type: [itemSchema], default: [] },
+    user:       { type: Schema.Types.ObjectId, ref: 'User',       required: true },
+    result:     { type: Schema.Types.ObjectId, ref: 'Result',     default: null  },
+    assessment: { type: Schema.Types.ObjectId, ref: 'Assessment', default: null  },
+    items:  { type: [itemSchema], default: [] },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   },
   { timestamps: true }

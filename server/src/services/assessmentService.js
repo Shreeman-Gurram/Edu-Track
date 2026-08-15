@@ -6,6 +6,7 @@ const Result = require('../models/Result');
 const User = require('../models/User');
 const Question = require('../models/Question');
 const { updateProgressFromResult } = require('./progressService');
+const { generateLearningPath } = require('./learningService');
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -330,6 +331,19 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
 
   await updateProgressFromResult(savedResult);
 
+  // Auto-generate a learning path for this result.
+  // Failures here must not break the submission response.
+  let learningPathId = null;
+  try {
+    const learningPath = await generateLearningPath({
+      resultId: savedResult._id,
+      userId: user._id,
+    });
+    learningPathId = learningPath._id.toString();
+  } catch (lpError) {
+    console.error('Learning path generation failed (non-fatal):', lpError.message);
+  }
+
   return {
   id: savedResult._id.toString(),
   score,
@@ -339,6 +353,7 @@ async function submitAssessment({ assessmentId, answers, userId, role, offlineAc
   difficultyPerformance,
   weakConcepts,
   completedAt: savedResult.completedAt,
+  learningPathId,
 };
 }
 

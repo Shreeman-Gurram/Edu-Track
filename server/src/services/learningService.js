@@ -298,40 +298,45 @@ async function generateLearningPath({
     previousPerformance
   );
 
-  const existingPath =
-    await getLearningPath(userId);
+  // Carry over in-progress/completed status from the
+  // most recent existing path for the same concepts,
+  // so the student doesn't lose their progress state.
+  const mostRecentPath = await getLearningPath(userId);
 
-  const items = existingPath
+  const items = mostRecentPath
     ? adaptLearningItems(
-        existingPath.items || [],
+        mostRecentPath.items || [],
         newItems
       )
     : newItems;
 
-  const learningPath =
-    await LearningPath.findOneAndUpdate(
-      { user: userId },
-      {
-        $set: {
-          items,
-          status: 'active',
-        },
-      },
-      {
-        new: true,
-        upsert: true,
-        setDefaultsOnInsert: true,
-      }
-    );
+  // Always create a NEW document — never overwrite a
+  // previous learning path. Each result gets its own track.
+  const learningPath = await LearningPath.create({
+    user:       userId,
+    result:     result._id,
+    assessment: result.assessment?._id || result.assessment,
+    items,
+    status: 'active',
+  });
 
   return learningPath;
+}
+
+// Returns ALL learning paths for a student, newest first,
+// each populated with the source assessment title.
+async function getLearningPaths(userId) {
+  return LearningPath.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate('assessment', 'title subject topic')
+    .populate('result', 'score totalQuestions weakConcepts completedAt');
 }
 
 async function getLearningPath(userId) {
   return LearningPath.findOne({
     user: userId,
     status: 'active',
-  });
+  }).sort({ createdAt: -1 });
 }
 
 function getPriorityRank(priority) {
@@ -365,6 +370,7 @@ async function getNextLearningItem(userId) {
 module.exports = {
   generateLearningPath,
   getLearningPath,
+  getLearningPaths,
   getNextLearningItem,
   getOwnedResult,
   conceptPerformance,
