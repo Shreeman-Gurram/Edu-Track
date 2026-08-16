@@ -3855,13 +3855,49 @@ async function seedQuestions() {
 
     console.log('Connected to MongoDB');
 
-    await Question.deleteMany({});
+    let inserted = 0;
+    let updated = 0;
 
-    const insertedQuestions = await Question.insertMany(questions);
+    for (const question of questions) {
+      const filter = {
+        questionText: question.questionText.trim(),
+        grade: String(question.grade).trim(),
+        subject: question.subject.trim(),
+        topic: question.topic.trim(),
+      };
 
-    console.log(
-      `${insertedQuestions.length} questions inserted successfully`
-    );
+      const existingQuestion = await Question.findOne(filter);
+
+      if (existingQuestion) {
+        await Question.updateOne(
+          { _id: existingQuestion._id },
+          {
+            $set: {
+              grade: question.grade,
+              subject: question.subject,
+              topic: question.topic,
+              concept: question.concept,
+              options: question.options,
+              correctAnswer: question.correctAnswer,
+              difficulty: question.difficulty,
+            },
+          }
+        );
+
+        updated++;
+      } else {
+        await Question.create(question);
+        inserted++;
+      }
+    }
+
+    console.log('');
+    console.log('================================');
+    console.log('Question seeding completed');
+    console.log('================================');
+    console.log(`Inserted: ${inserted}`);
+    console.log(`Updated: ${updated}`);
+    console.log(`Total seed questions: ${questions.length}`);
 
     await mongoose.disconnect();
 
