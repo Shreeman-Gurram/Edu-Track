@@ -2086,6 +2086,1766 @@ const questions = [
   ],
   correctAnswer: "C",
   difficulty: "hard"
+},
+
+{
+  questionText: "Which of the following is an irrational number?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Number Systems",
+  concept: "Rational and Irrational Numbers",
+  options: [
+    { text: "0.25", value: "A" },
+    { text: "3/5", value: "B" },
+    { text: "√2", value: "C" },
+    { text: "0.75", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following is a rational number?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Number Systems",
+  concept: "Rational Numbers",
+  options: [
+    { text: "√3", value: "A" },
+    { text: "√5", value: "B" },
+    { text: "0.125", value: "C" },
+    { text: "π", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The decimal expansion of 1/8 is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Number Systems",
+  concept: "Decimal Representation",
+  options: [
+    { text: "0.125", value: "A" },
+    { text: "0.25", value: "B" },
+    { text: "0.375", value: "C" },
+    { text: "0.625", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "Which number lies between 2 and 3?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Number Systems",
+  concept: "Irrational Numbers on Number Line",
+  options: [
+    { text: "√3", value: "A" },
+    { text: "√5", value: "B" },
+    { text: "√10", value: "C" },
+    { text: "√12", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "What is the value of (√5)²?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Number Systems",
+  concept: "Properties of Irrational Numbers",
+  options: [
+    { text: "5", value: "A" },
+    { text: "10", value: "B" },
+    { text: "√5", value: "C" },
+    { text: "25", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+
+{
+  questionText: "What is the degree of the polynomial 4x³ + 2x² - 7?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Polynomials",
+  concept: "Degree of a Polynomial",
+  options: [
+    { text: "1", value: "A" },
+    { text: "2", value: "B" },
+    { text: "3", value: "C" },
+    { text: "4", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "What is the coefficient of x² in 5x³ - 4x² + 7x - 2?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Polynomials",
+  concept: "Coefficients of Polynomials",
+  options: [
+    { text: "5", value: "A" },
+    { text: "-4", value: "B" },
+    { text: "7", value: "C" },
+    { text: "-2", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "If p(x) = x + 5, what is p(2)?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Polynomials",
+  concept: "Value of a Polynomial",
+  options: [
+    { text: "5", value: "A" },
+    { text: "6", value: "B" },
+    { text: "7", value: "C" },
+    { text: "8", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following is a linear polynomial?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Polynomials",
+  concept: "Types of Polynomials",
+  options: [
+    { text: "x² + 1", value: "A" },
+    { text: "3x + 2", value: "B" },
+    { text: "x³ - 1", value: "C" },
+    { text: "x² + x + 1", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "What is the value of x² - 9 at x = 3?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Polynomials",
+  concept: "Polynomial Evaluation",
+  options: [
+    { text: "0", value: "A" },
+    { text: "3", value: "B" },
+    { text: "6", value: "C" },
+    { text: "9", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The coordinates of the origin are:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Coordinate Geometry",
+  concept: "Cartesian Plane",
+  options: [
+    { text: "(1,0)", value: "A" },
+    { text: "(0,1)", value: "B" },
+    { text: "(0,0)", value: "C" },
+    { text: "(-1,0)", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "A point on the x-axis has which coordinate equal to zero?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Coordinate Geometry",
+  concept: "Coordinates of Points",
+  options: [
+    { text: "x-coordinate", value: "A" },
+    { text: "y-coordinate", value: "B" },
+    { text: "Both coordinates", value: "C" },
+    { text: "Neither coordinate", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "In which quadrant is the point (-3, 4)?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Coordinate Geometry",
+  concept: "Quadrants",
+  options: [
+    { text: "I", value: "A" },
+    { text: "II", value: "B" },
+    { text: "III", value: "C" },
+    { text: "IV", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+
+{
+  questionText: "Which ordered pair satisfies x + y = 5?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Linear Equations in Two Variables",
+  concept: "Solutions of Linear Equations",
+  options: [
+    { text: "(2,3)", value: "A" },
+    { text: "(1,1)", value: "B" },
+    { text: "(4,2)", value: "C" },
+    { text: "(5,5)", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "How many solutions does a linear equation in two variables generally have?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Linear Equations in Two Variables",
+  concept: "Solutions of Linear Equations",
+  options: [
+    { text: "One", value: "A" },
+    { text: "Two", value: "B" },
+    { text: "No solution", value: "C" },
+    { text: "Infinitely many", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "medium"
+},
+{
+  questionText: "If x + y = 10 and x = 4, what is y?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Linear Equations in Two Variables",
+  concept: "Solving Linear Equations",
+  options: [
+    { text: "4", value: "A" },
+    { text: "5", value: "B" },
+    { text: "6", value: "C" },
+    { text: "7", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The sum of angles on a straight line is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Lines and Angles",
+  concept: "Linear Pair",
+  options: [
+    { text: "90°", value: "A" },
+    { text: "180°", value: "B" },
+    { text: "270°", value: "C" },
+    { text: "360°", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Vertically opposite angles are:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Lines and Angles",
+  concept: "Vertically Opposite Angles",
+  options: [
+    { text: "Unequal", value: "A" },
+    { text: "Equal", value: "B" },
+    { text: "Supplementary", value: "C" },
+    { text: "Complementary", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "If one angle of a linear pair is 65°, the other angle is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Lines and Angles",
+  concept: "Linear Pair",
+  options: [
+    { text: "25°", value: "A" },
+    { text: "65°", value: "B" },
+    { text: "115°", value: "C" },
+    { text: "125°", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The sum of the angles of a triangle is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Triangles",
+  concept: "Angle Sum Property",
+  options: [
+    { text: "90°", value: "A" },
+    { text: "180°", value: "B" },
+    { text: "270°", value: "C" },
+    { text: "360°", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A triangle with all three sides equal is called:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Triangles",
+  concept: "Types of Triangles",
+  options: [
+    { text: "Scalene", value: "A" },
+    { text: "Isosceles", value: "B" },
+    { text: "Equilateral", value: "C" },
+    { text: "Right-angled", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "An isosceles triangle has:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Triangles",
+  concept: "Properties of Isosceles Triangle",
+  options: [
+    { text: "No equal sides", value: "A" },
+    { text: "Two equal sides", value: "B" },
+    { text: "Three unequal sides", value: "C" },
+    { text: "Three right angles", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A triangle with sides 3 cm, 4 cm and 5 cm is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Triangles",
+  concept: "Right Angled Triangle",
+  options: [
+    { text: "Equilateral", value: "A" },
+    { text: "Isosceles", value: "B" },
+    { text: "Right-angled", value: "C" },
+    { text: "Obtuse", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+
+{
+  questionText: "The sum of the interior angles of a quadrilateral is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Quadrilaterals",
+  concept: "Angle Sum Property",
+  options: [
+    { text: "180°", value: "A" },
+    { text: "270°", value: "B" },
+    { text: "360°", value: "C" },
+    { text: "540°", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "A parallelogram has opposite sides that are:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Quadrilaterals",
+  concept: "Properties of Parallelogram",
+  options: [
+    { text: "Unequal", value: "A" },
+    { text: "Parallel and equal", value: "B" },
+    { text: "Perpendicular", value: "C" },
+    { text: "Always curved", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A quadrilateral with all sides equal and all angles 90° is a:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Quadrilaterals",
+  concept: "Properties of Square",
+  options: [
+    { text: "Rhombus", value: "A" },
+    { text: "Rectangle", value: "B" },
+    { text: "Square", value: "C" },
+    { text: "Trapezium", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The distance from the centre of a circle to any point on the circle is called:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Circles",
+  concept: "Radius of a Circle",
+  options: [
+    { text: "Diameter", value: "A" },
+    { text: "Radius", value: "B" },
+    { text: "Chord", value: "C" },
+    { text: "Arc", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The diameter of a circle is twice its:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Circles",
+  concept: "Radius and Diameter",
+  options: [
+    { text: "Chord", value: "A" },
+    { text: "Radius", value: "B" },
+    { text: "Circumference", value: "C" },
+    { text: "Area", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A line segment joining two points on a circle is called:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Circles",
+  concept: "Chord",
+  options: [
+    { text: "Radius", value: "A" },
+    { text: "Diameter", value: "B" },
+    { text: "Chord", value: "C" },
+    { text: "Tangent", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "What is the semi-perimeter of a triangle with sides 5 cm, 6 cm and 7 cm?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Heron's Formula",
+  concept: "Semi-Perimeter",
+  options: [
+    { text: "8 cm", value: "A" },
+    { text: "9 cm", value: "B" },
+    { text: "10 cm", value: "C" },
+    { text: "18 cm", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "Heron's formula is used to find the:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Heron's Formula",
+  concept: "Area of Triangle",
+  options: [
+    { text: "Volume of a cube", value: "A" },
+    { text: "Area of a triangle", value: "B" },
+    { text: "Circumference of a circle", value: "C" },
+    { text: "Area of a rectangle", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The volume of a cube with side a is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Surface Areas and Volumes",
+  concept: "Volume of Cube",
+  options: [
+    { text: "a²", value: "A" },
+    { text: "3a", value: "B" },
+    { text: "a³", value: "C" },
+    { text: "6a²", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The total surface area of a cube of side 4 cm is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Surface Areas and Volumes",
+  concept: "Surface Area of Cube",
+  options: [
+    { text: "16 cm²", value: "A" },
+    { text: "64 cm²", value: "B" },
+    { text: "96 cm²", value: "C" },
+    { text: "128 cm²", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "The volume of a cuboid measuring 2 cm × 3 cm × 4 cm is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Surface Areas and Volumes",
+  concept: "Volume of Cuboid",
+  options: [
+    { text: "9 cm³", value: "A" },
+    { text: "12 cm³", value: "B" },
+    { text: "24 cm³", value: "C" },
+    { text: "36 cm³", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The average of a set of observations is called the:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Statistics",
+  concept: "Mean",
+  options: [
+    { text: "Median", value: "A" },
+    { text: "Mode", value: "B" },
+    { text: "Mean", value: "C" },
+    { text: "Range", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Find the mean of 2, 4, 6 and 8.",
+  grade: "9",
+  subject: "Maths",
+  topic: "Statistics",
+  concept: "Calculating Mean",
+  options: [
+    { text: "4", value: "A" },
+    { text: "5", value: "B" },
+    { text: "6", value: "C" },
+    { text: "7", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The value that occurs most frequently in a data set is called:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Statistics",
+  concept: "Mode",
+  options: [
+    { text: "Mean", value: "A" },
+    { text: "Median", value: "B" },
+    { text: "Mode", value: "C" },
+    { text: "Range", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "What is the probability of getting a head when a fair coin is tossed?",
+  grade: "9",
+  subject: "Maths",
+  topic: "Probability",
+  concept: "Basic Probability",
+  options: [
+    { text: "0", value: "A" },
+    { text: "1/4", value: "B" },
+    { text: "1/2", value: "C" },
+    { text: "1", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The probability of an impossible event is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Probability",
+  concept: "Probability of Impossible Event",
+  options: [
+    { text: "0", value: "A" },
+    { text: "1/2", value: "B" },
+    { text: "1", value: "C" },
+    { text: "2", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "The probability of a sure event is:",
+  grade: "9",
+  subject: "Maths",
+  topic: "Probability",
+  concept: "Probability of Sure Event",
+  options: [
+    { text: "0", value: "A" },
+    { text: "1/4", value: "B" },
+    { text: "1/2", value: "C" },
+    { text: "1", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "easy"
+},
+{
+  questionText: "What is the SI unit of distance?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "SI Units",
+  options: [
+    { text: "Kilometre", value: "A" },
+    { text: "Metre", value: "B" },
+    { text: "Centimetre", value: "C" },
+    { text: "Millimetre", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following is a scalar quantity?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Scalar and Vector Quantities",
+  options: [
+    { text: "Displacement", value: "A" },
+    { text: "Velocity", value: "B" },
+    { text: "Speed", value: "C" },
+    { text: "Acceleration", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The rate of change of distance with respect to time is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Speed",
+  options: [
+    { text: "Velocity", value: "A" },
+    { text: "Speed", value: "B" },
+    { text: "Acceleration", value: "C" },
+    { text: "Displacement", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A car travels 100 metres in 20 seconds. What is its speed?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Calculation of Speed",
+  options: [
+    { text: "2 m/s", value: "A" },
+    { text: "5 m/s", value: "B" },
+    { text: "10 m/s", value: "C" },
+    { text: "20 m/s", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Which quantity describes the shortest distance between the initial and final positions of an object?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Displacement",
+  options: [
+    { text: "Distance", value: "A" },
+    { text: "Speed", value: "B" },
+    { text: "Displacement", value: "C" },
+    { text: "Acceleration", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "The slope of a distance-time graph represents:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Distance-Time Graph",
+  options: [
+    { text: "Acceleration", value: "A" },
+    { text: "Speed", value: "B" },
+    { text: "Force", value: "C" },
+    { text: "Displacement", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "An object moving with uniform velocity has:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Uniform Motion",
+  options: [
+    { text: "Constant speed and constant direction", value: "A" },
+    { text: "Changing speed only", value: "B" },
+    { text: "Changing direction only", value: "C" },
+    { text: "Constant acceleration only", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "medium"
+},
+{
+  questionText: "What is the SI unit of acceleration?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Motion",
+  concept: "Acceleration",
+  options: [
+    { text: "m/s", value: "A" },
+    { text: "m/s²", value: "B" },
+    { text: "km/h", value: "C" },
+    { text: "N", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+
+{
+  questionText: "Newton's first law of motion is also known as the law of:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Newton's First Law",
+  options: [
+    { text: "Acceleration", value: "A" },
+    { text: "Inertia", value: "B" },
+    { text: "Momentum", value: "C" },
+    { text: "Gravitation", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The tendency of an object to resist a change in its state of motion is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Inertia",
+  options: [
+    { text: "Momentum", value: "A" },
+    { text: "Inertia", value: "B" },
+    { text: "Force", value: "C" },
+    { text: "Pressure", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The SI unit of force is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "SI Unit of Force",
+  options: [
+    { text: "Joule", value: "A" },
+    { text: "Newton", value: "B" },
+    { text: "Watt", value: "C" },
+    { text: "Pascal", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "According to Newton's second law, force is equal to:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Newton's Second Law",
+  options: [
+    { text: "Mass × velocity", value: "A" },
+    { text: "Mass × acceleration", value: "B" },
+    { text: "Mass × distance", value: "C" },
+    { text: "Velocity × acceleration", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "What happens to the momentum of an object if its velocity is doubled while its mass remains constant?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Momentum",
+  options: [
+    { text: "It becomes half", value: "A" },
+    { text: "It remains the same", value: "B" },
+    { text: "It doubles", value: "C" },
+    { text: "It becomes four times", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "Newton's third law states that every action has:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Newton's Third Law",
+  options: [
+    { text: "No reaction", value: "A" },
+    { text: "An equal and opposite reaction", value: "B" },
+    { text: "A smaller reaction", value: "C" },
+    { text: "A greater reaction", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A force of 10 N acts on a body of mass 2 kg. What is its acceleration?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Force and Laws of Motion",
+  concept: "Force and Acceleration",
+  options: [
+    { text: "2 m/s²", value: "A" },
+    { text: "5 m/s²", value: "B" },
+    { text: "10 m/s²", value: "C" },
+    { text: "20 m/s²", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+
+{
+  questionText: "The force with which the Earth attracts an object is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Gravitational Force",
+  options: [
+    { text: "Friction", value: "A" },
+    { text: "Weight", value: "B" },
+    { text: "Pressure", value: "C" },
+    { text: "Momentum", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The SI unit of weight is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Weight",
+  options: [
+    { text: "Kilogram", value: "A" },
+    { text: "Newton", value: "B" },
+    { text: "Joule", value: "C" },
+    { text: "Pascal", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The value of acceleration due to gravity near the Earth's surface is approximately:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Acceleration Due to Gravity",
+  options: [
+    { text: "4.9 m/s²", value: "A" },
+    { text: "9.8 m/s²", value: "B" },
+    { text: "19.6 m/s²", value: "C" },
+    { text: "98 m/s²", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Which force keeps planets in their orbits around the Sun?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Universal Gravitation",
+  options: [
+    { text: "Magnetic force", value: "A" },
+    { text: "Gravitational force", value: "B" },
+    { text: "Frictional force", value: "C" },
+    { text: "Electrostatic force", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "What happens to the weight of an object when it is taken to the Moon?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Mass and Weight",
+  options: [
+    { text: "It increases", value: "A" },
+    { text: "It decreases", value: "B" },
+    { text: "It becomes zero", value: "C" },
+    { text: "It remains exactly the same", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "The mass of an object on the Moon compared with its mass on Earth is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Gravitation",
+  concept: "Mass and Weight",
+  options: [
+    { text: "Greater", value: "A" },
+    { text: "Smaller", value: "B" },
+    { text: "The same", value: "C" },
+    { text: "Zero", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "Work is said to be done when a force causes:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Work",
+  options: [
+    { text: "Only force", value: "A" },
+    { text: "Displacement in the direction of force", value: "B" },
+    { text: "Only displacement", value: "C" },
+    { text: "No movement", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The SI unit of work is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "SI Unit of Work",
+  options: [
+    { text: "Newton", value: "A" },
+    { text: "Joule", value: "B" },
+    { text: "Watt", value: "C" },
+    { text: "Pascal", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A force of 20 N moves an object through 5 m in the direction of the force. What is the work done?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Calculation of Work",
+  options: [
+    { text: "25 J", value: "A" },
+    { text: "50 J", value: "B" },
+    { text: "100 J", value: "C" },
+    { text: "200 J", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "The energy possessed by an object due to its motion is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Kinetic Energy",
+  options: [
+    { text: "Potential energy", value: "A" },
+    { text: "Kinetic energy", value: "B" },
+    { text: "Chemical energy", value: "C" },
+    { text: "Heat energy", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The energy possessed by an object due to its position is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Potential Energy",
+  options: [
+    { text: "Kinetic energy", value: "A" },
+    { text: "Potential energy", value: "B" },
+    { text: "Sound energy", value: "C" },
+    { text: "Electrical energy", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The SI unit of power is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Power",
+  options: [
+    { text: "Joule", value: "A" },
+    { text: "Newton", value: "B" },
+    { text: "Watt", value: "C" },
+    { text: "Pascal", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Power is defined as:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Work and Energy",
+  concept: "Definition of Power",
+  options: [
+    { text: "Work × time", value: "A" },
+    { text: "Work / time", value: "B" },
+    { text: "Force / distance", value: "C" },
+    { text: "Energy × time", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+
+{
+  questionText: "Sound is produced by:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Production of Sound",
+  options: [
+    { text: "Vibrating objects", value: "A" },
+    { text: "Stationary objects", value: "B" },
+    { text: "Only liquids", value: "C" },
+    { text: "Only gases", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "Sound cannot travel through:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Propagation of Sound",
+  options: [
+    { text: "Solids", value: "A" },
+    { text: "Liquids", value: "B" },
+    { text: "Gases", value: "C" },
+    { text: "Vacuum", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "easy"
+},
+{
+  questionText: "The number of vibrations made by a source in one second is called:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Frequency",
+  options: [
+    { text: "Amplitude", value: "A" },
+    { text: "Frequency", value: "B" },
+    { text: "Time period", value: "C" },
+    { text: "Wavelength", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The SI unit of frequency is:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Unit of Frequency",
+  options: [
+    { text: "Decibel", value: "A" },
+    { text: "Hertz", value: "B" },
+    { text: "Metre", value: "C" },
+    { text: "Second", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The loudness of sound mainly depends on its:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Amplitude",
+  options: [
+    { text: "Frequency", value: "A" },
+    { text: "Amplitude", value: "B" },
+    { text: "Time period", value: "C" },
+    { text: "Speed", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The pitch of a sound depends on its:",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Pitch and Frequency",
+  options: [
+    { text: "Amplitude", value: "A" },
+    { text: "Frequency", value: "B" },
+    { text: "Speed", value: "C" },
+    { text: "Wavelength only", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "A sound wave has a frequency of 500 Hz. How many vibrations does it make per second?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Frequency",
+  options: [
+    { text: "50", value: "A" },
+    { text: "100", value: "B" },
+    { text: "500", value: "C" },
+    { text: "1000", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "Which characteristic of sound allows us to distinguish between two sounds having the same pitch and loudness?",
+  grade: "9",
+  subject: "Physics",
+  topic: "Sound",
+  concept: "Quality of Sound",
+  options: [
+    { text: "Amplitude", value: "A" },
+    { text: "Frequency", value: "B" },
+    { text: "Quality or timbre", value: "C" },
+    { text: "Speed", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "Which of the following is a physical change?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Physical and Chemical Changes",
+  options: [
+    { text: "Burning of paper", value: "A" },
+    { text: "Rusting of iron", value: "B" },
+    { text: "Melting of ice", value: "C" },
+    { text: "Digestion of food", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which state of matter has a definite shape and definite volume?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "States of Matter",
+  options: [
+    { text: "Solid", value: "A" },
+    { text: "Liquid", value: "B" },
+    { text: "Gas", value: "C" },
+    { text: "Plasma", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "Which state of matter has particles that are very far apart?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Particle Arrangement",
+  options: [
+    { text: "Solid", value: "A" },
+    { text: "Liquid", value: "B" },
+    { text: "Gas", value: "C" },
+    { text: "All of these", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The process by which a solid changes directly into a gas is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Sublimation",
+  options: [
+    { text: "Evaporation", value: "A" },
+    { text: "Condensation", value: "B" },
+    { text: "Sublimation", value: "C" },
+    { text: "Freezing", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following has the highest kinetic energy of particles?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Kinetic Energy of Particles",
+  options: [
+    { text: "Solid", value: "A" },
+    { text: "Liquid", value: "B" },
+    { text: "Gas", value: "C" },
+    { text: "All have equal kinetic energy", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "Evaporation causes cooling because:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Evaporation",
+  options: [
+    { text: "Low-energy particles escape", value: "A" },
+    { text: "High-energy particles escape", value: "B" },
+    { text: "Particles stop moving", value: "C" },
+    { text: "Temperature always increases", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "Which factor does NOT affect the rate of evaporation?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Factors Affecting Evaporation",
+  options: [
+    { text: "Surface area", value: "A" },
+    { text: "Temperature", value: "B" },
+    { text: "Humidity", value: "C" },
+    { text: "Colour of the liquid", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "medium"
+},
+{
+  questionText: "The SI unit of temperature is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Matter in Our Surroundings",
+  concept: "Temperature",
+  options: [
+    { text: "Celsius", value: "A" },
+    { text: "Fahrenheit", value: "B" },
+    { text: "Kelvin", value: "C" },
+    { text: "Joule", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "A homogeneous mixture of two or more substances is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Homogeneous Mixture",
+  options: [
+    { text: "Solution", value: "A" },
+    { text: "Suspension", value: "B" },
+    { text: "Colloid", value: "C" },
+    { text: "Compound", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "easy"
+},
+{
+  questionText: "In a salt solution, salt is the:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Solute and Solvent",
+  options: [
+    { text: "Solvent", value: "A" },
+    { text: "Solute", value: "B" },
+    { text: "Suspension", value: "C" },
+    { text: "Colloid", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following is a heterogeneous mixture?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Heterogeneous Mixture",
+  options: [
+    { text: "Salt solution", value: "A" },
+    { text: "Air", value: "B" },
+    { text: "Sugar solution", value: "C" },
+    { text: "Sand and water", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "easy"
+},
+{
+  questionText: "Which method is used to separate cream from milk?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Centrifugation",
+  options: [
+    { text: "Filtration", value: "A" },
+    { text: "Centrifugation", value: "B" },
+    { text: "Sublimation", value: "C" },
+    { text: "Chromatography", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "Which method is commonly used to separate different colours in ink?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Chromatography",
+  options: [
+    { text: "Filtration", value: "A" },
+    { text: "Distillation", value: "B" },
+    { text: "Chromatography", value: "C" },
+    { text: "Decantation", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following is a pure substance?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Pure Substances",
+  options: [
+    { text: "Air", value: "A" },
+    { text: "Milk", value: "B" },
+    { text: "Distilled water", value: "C" },
+    { text: "Soil", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "A suspension is a mixture in which particles:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Suspension",
+  options: [
+    { text: "Are completely dissolved", value: "A" },
+    { text: "Are large enough to settle down", value: "B" },
+    { text: "Cannot be seen at all", value: "C" },
+    { text: "Always form a compound", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "Which separation technique is used to obtain salt from seawater?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Is Matter Around Us Pure",
+  concept: "Evaporation",
+  options: [
+    { text: "Filtration", value: "A" },
+    { text: "Evaporation", value: "B" },
+    { text: "Centrifugation", value: "C" },
+    { text: "Chromatography", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+
+{
+  questionText: "Who proposed the law of conservation of mass?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Law of Conservation of Mass",
+  options: [
+    { text: "Dalton", value: "A" },
+    { text: "Lavoisier", value: "B" },
+    { text: "Rutherford", value: "C" },
+    { text: "Bohr", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The smallest particle of an element that takes part in a chemical reaction is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Atom",
+  options: [
+    { text: "Molecule", value: "A" },
+    { text: "Atom", value: "B" },
+    { text: "Ion", value: "C" },
+    { text: "Compound", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The molecular mass of water (H₂O) is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Molecular Mass",
+  options: [
+    { text: "16 u", value: "A" },
+    { text: "18 u", value: "B" },
+    { text: "20 u", value: "C" },
+    { text: "22 u", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "How many atoms are present in one molecule of carbon dioxide (CO₂)?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Molecular Formula",
+  options: [
+    { text: "1", value: "A" },
+    { text: "2", value: "B" },
+    { text: "3", value: "C" },
+    { text: "4", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The valency of oxygen is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Valency",
+  options: [
+    { text: "1", value: "A" },
+    { text: "2", value: "B" },
+    { text: "3", value: "C" },
+    { text: "4", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "What is the formula of calcium chloride?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Writing Chemical Formulae",
+  options: [
+    { text: "CaCl", value: "A" },
+    { text: "CaCl₂", value: "B" },
+    { text: "Ca₂Cl", value: "C" },
+    { text: "Ca₂Cl₂", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "One mole of any substance contains approximately:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Mole Concept",
+  options: [
+    { text: "6.022 × 10²³ particles", value: "A" },
+    { text: "6.022 × 10²² particles", value: "B" },
+    { text: "3.011 × 10²³ particles", value: "C" },
+    { text: "1 × 10²³ particles", value: "D" }
+  ],
+  correctAnswer: "A",
+  difficulty: "medium"
+},
+{
+  questionText: "What is the atomic mass of oxygen?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Atoms and Molecules",
+  concept: "Atomic Mass",
+  options: [
+    { text: "8 u", value: "A" },
+    { text: "12 u", value: "B" },
+    { text: "16 u", value: "C" },
+    { text: "32 u", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+
+{
+  questionText: "The negatively charged particle present in an atom is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Subatomic Particles",
+  options: [
+    { text: "Proton", value: "A" },
+    { text: "Neutron", value: "B" },
+    { text: "Electron", value: "C" },
+    { text: "Nucleus", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "The positively charged particle in an atom is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Proton",
+  options: [
+    { text: "Electron", value: "A" },
+    { text: "Proton", value: "B" },
+    { text: "Neutron", value: "C" },
+    { text: "Photon", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The nucleus of an atom contains:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Atomic Nucleus",
+  options: [
+    { text: "Only electrons", value: "A" },
+    { text: "Protons and neutrons", value: "B" },
+    { text: "Only neutrons", value: "C" },
+    { text: "Protons and electrons", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "The atomic number of an element is equal to the number of:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Atomic Number",
+  options: [
+    { text: "Neutrons", value: "A" },
+    { text: "Protons", value: "B" },
+    { text: "Protons and neutrons", value: "C" },
+    { text: "Electrons and neutrons", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "Atoms of the same element having different numbers of neutrons are called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Isotopes",
+  options: [
+    { text: "Isobars", value: "A" },
+    { text: "Isotopes", value: "B" },
+    { text: "Ions", value: "C" },
+    { text: "Molecules", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "According to Bohr's model, electrons revolve around the nucleus in:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Bohr Model",
+  options: [
+    { text: "Random paths", value: "A" },
+    { text: "Fixed shells or energy levels", value: "B" },
+    { text: "The nucleus", value: "C" },
+    { text: "Straight lines", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "An atom has 11 protons. What is its atomic number?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Atomic Number",
+  options: [
+    { text: "10", value: "A" },
+    { text: "11", value: "B" },
+    { text: "12", value: "C" },
+    { text: "22", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "An atom has 17 protons and 18 neutrons. What is its mass number?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Structure of the Atom",
+  concept: "Mass Number",
+  options: [
+    { text: "17", value: "A" },
+    { text: "18", value: "B" },
+    { text: "35", value: "C" },
+    { text: "36", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+
+{
+  questionText: "Which of the following is an example of a chemical change?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Chemical Change",
+  options: [
+    { text: "Melting ice", value: "A" },
+    { text: "Boiling water", value: "B" },
+    { text: "Rusting of iron", value: "C" },
+    { text: "Cutting paper", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which gas is released when an acid reacts with a metal?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Acid-Metal Reaction",
+  options: [
+    { text: "Oxygen", value: "A" },
+    { text: "Nitrogen", value: "B" },
+    { text: "Hydrogen", value: "C" },
+    { text: "Carbon dioxide", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "medium"
+},
+{
+  questionText: "A reaction in which two or more substances combine to form a single product is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Combination Reaction",
+  options: [
+    { text: "Decomposition reaction", value: "A" },
+    { text: "Combination reaction", value: "B" },
+    { text: "Displacement reaction", value: "C" },
+    { text: "Neutralisation reaction", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "A reaction in which a compound breaks down into two or more simpler substances is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Decomposition Reaction",
+  options: [
+    { text: "Combination reaction", value: "A" },
+    { text: "Decomposition reaction", value: "B" },
+    { text: "Displacement reaction", value: "C" },
+    { text: "Redox reaction", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "easy"
+},
+{
+  questionText: "When zinc reacts with dilute hydrochloric acid, the gas produced is:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Metal and Acid Reaction",
+  options: [
+    { text: "Oxygen", value: "A" },
+    { text: "Hydrogen", value: "B" },
+    { text: "Chlorine", value: "C" },
+    { text: "Carbon dioxide", value: "D" }
+  ],
+  correctAnswer: "B",
+  difficulty: "medium"
+},
+{
+  questionText: "Which type of reaction occurs when one element replaces another element in a compound?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Displacement Reaction",
+  options: [
+    { text: "Combination", value: "A" },
+    { text: "Decomposition", value: "B" },
+    { text: "Displacement", value: "C" },
+    { text: "Neutralisation", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
+},
+{
+  questionText: "Which of the following observations can indicate that a chemical reaction has occurred?",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Indicators of Chemical Reaction",
+  options: [
+    { text: "Change in colour", value: "A" },
+    { text: "Evolution of gas", value: "B" },
+    { text: "Formation of a precipitate", value: "C" },
+    { text: "All of these", value: "D" }
+  ],
+  correctAnswer: "D",
+  difficulty: "easy"
+},
+{
+  questionText: "The reaction between an acid and a base to form salt and water is called:",
+  grade: "9",
+  subject: "Chemistry",
+  topic: "Chemical Reactions",
+  concept: "Neutralisation",
+  options: [
+    { text: "Displacement", value: "A" },
+    { text: "Combination", value: "B" },
+    { text: "Neutralisation", value: "C" },
+    { text: "Decomposition", value: "D" }
+  ],
+  correctAnswer: "C",
+  difficulty: "easy"
 }
 ];
 
