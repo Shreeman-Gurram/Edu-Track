@@ -11,6 +11,8 @@ import Progress from './pages/Progress'
 import LearningContent from './pages/LearningContent'
 import MainLayout from './components/layout/MainLayout'
 import Register from './pages/Register'
+import Profile from './pages/Profile'
+import Downloads from './pages/Downloads'
 
 function App() {
   return (
@@ -32,7 +34,14 @@ function App() {
             </MainLayout>
           }
         />
-
+        <Route
+          path="/profile"
+          element={
+          <MainLayout>
+            <Profile />
+          </MainLayout>
+          }
+        />
         <Route
           path="/subjects"
           element={
@@ -50,10 +59,12 @@ function App() {
             </MainLayout>
           }
         />
+
         <Route
           path="/learning-content"
           element={<LearningContent />}
         />
+
         <Route
           path="/assessment"
           element={
@@ -87,6 +98,14 @@ function App() {
             <MainLayout>
               <Progress />
             </MainLayout>
+          }
+        />
+        <Route
+          path="/downloads"
+          element={
+          <MainLayout>
+            <Downloads />
+          </MainLayout>
           }
         />
 
