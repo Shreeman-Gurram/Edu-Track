@@ -19,6 +19,10 @@ function Sidebar() {
       name: 'Progress',
       path: '/progress',
     },
+    {
+      name: 'Downloads',
+      path: '/downloads',
+    },
   ]
 
   return (
