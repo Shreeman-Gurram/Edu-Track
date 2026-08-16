@@ -11,6 +11,7 @@ function Register() {
     email: '',
     password: '',
     confirmPassword: '',
+    grade: '10',
   })
 
   const [error, setError] = useState('')
@@ -54,6 +55,7 @@ function Register() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        grade: formData.grade,
       })
       setAuthToken(token)
       navigate('/dashboard')
@@ -211,6 +213,25 @@ function Register() {
                 onChange={handleChange}
               />
 
+            </div>
+
+            {/* Grade Selection */}
+            <div className="mb-4">
+              <label htmlFor="grade" className="form-label fw-semibold">
+                Grade
+              </label>
+              <select
+                id="grade"
+                name="grade"
+                className="form-select auth-input"
+                value={formData.grade}
+                onChange={handleChange}
+              >
+                <option value="10">Grade 10</option>
+                <option value="9">Grade 9</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+              </select>
             </div>
 
             <button

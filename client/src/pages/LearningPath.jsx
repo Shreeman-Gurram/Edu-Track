@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getLearningPaths } from '../api/learningApi'
+import { getLearningPackage } from '../api/offlineApi'
+import { savePackage, getPackage } from '../offline/packageStorage'
 
 // Overall priority based on average score across all concepts in the path
 function overallPriorityLabel(items) {
@@ -30,6 +32,8 @@ function LearningPath() {
   const [error, setError]         = useState('')
   const [paths, setPaths]         = useState([])
   const [focusPath, setFocusPath] = useState(null)
+  const [downloadingId, setDownloadingId] = useState(null)
+  const [feedback, setFeedback] = useState({ type: '', message: '' })
 
   useEffect(() => {
     let active = true
@@ -74,8 +78,43 @@ function LearningPath() {
         )[0]
         setFocusPath(focus)
       })
-      .catch((err) => { if (active) setError(err.message) })
-      .finally(() => { if (active) setLoading(false) })
+      .catch((err) => {
+        if (active) {
+          if (!navigator.onLine) {
+            getPackage()
+              .then((pkg) => {
+                if (!active) return
+                if (pkg) {
+                  const lp = {
+                    id:           pkg.id,
+                    assessment:   pkg.title || 'Learning Package',
+                    assessmentId: pkg.assessmentId,
+                    subject:      pkg.lessons[0]?.topic || '',
+                    items:        pkg.lessons || [],
+                    progress:     0,
+                    priority:     'high',
+                    createdAt:    new Date().toISOString(),
+                  }
+                  setPaths([lp])
+                  setFocusPath(lp)
+                } else {
+                  setError('No offline package found. Please connect to the internet.')
+                }
+              })
+              .catch((pkgErr) => {
+                setError('Failed to load offline package: ' + pkgErr.message)
+              })
+              .finally(() => {
+                setLoading(false)
+              })
+            return
+          }
+          setError(err.message)
+        }
+      })
+      .finally(() => {
+        if (active && navigator.onLine) setLoading(false)
+      })
     return () => { active = false }
   }, [])
 
@@ -88,6 +127,31 @@ function LearningPath() {
         subject:         lp.subject,
       },
     })
+  }
+
+  const handleDownload = async (lp) => {
+    if (!navigator.onLine) {
+      setFeedback({ type: 'danger', message: 'Cannot download learning package while offline.' })
+      return
+    }
+    setDownloadingId(lp.id)
+    setFeedback({ type: '', message: '' })
+    try {
+      const res = await getLearningPackage()
+      if (res.success && res.package) {
+        await savePackage(res.package)
+        setFeedback({
+          type: 'success',
+          message: `Successfully downloaded "${res.package.title || 'Learning Package'}" (Version ${res.package.version}) for offline learning!`
+        })
+      } else {
+        throw new Error(res.message || 'Failed to download learning package.')
+      }
+    } catch (err) {
+      setFeedback({ type: 'danger', message: err.message || 'Connection error while downloading package.' })
+    } finally {
+      setDownloadingId(null)
+    }
   }
 
   if (loading) return <div className="text-muted container py-4">Loading your learning path…</div>
@@ -118,6 +182,14 @@ function LearningPath() {
         <p className="text-muted">A learning plan based on your current performance.</p>
       </div>
 
+      {/* Feedback Messages */}
+      {feedback.message && (
+        <div className={`alert alert-${feedback.type} alert-dismissible fade show mb-4`} role="alert">
+          {feedback.message}
+          <button type="button" className="btn-close" onClick={() => setFeedback({ type: '', message: '' })} aria-label="Close"></button>
+        </div>
+      )}
+
       {/* Focus Area — path that needs the most attention */}
       {focusPath && (
         <div className="card focus-card mb-5">
@@ -145,12 +217,21 @@ function LearningPath() {
               <div className="progress-bar" style={{ width: `${focusPath.progress}%` }} />
             </div>
 
-            <button
-              className="btn btn-primary"
-              onClick={() => openPath(focusPath)}
-            >
-              Start Learning
-            </button>
+            <div className="d-flex gap-2 flex-wrap">
+              <button
+                className="btn btn-primary"
+                onClick={() => openPath(focusPath)}
+              >
+                Start Learning
+              </button>
+              <button
+                className="btn btn-outline-secondary text-dark"
+                onClick={() => handleDownload(focusPath)}
+                disabled={downloadingId === focusPath.id}
+              >
+                {downloadingId === focusPath.id ? 'Downloading...' : '⬇️ Download for Offline'}
+              </button>
+            </div>
 
           </div>
         </div>
@@ -192,12 +273,22 @@ function LearningPath() {
                   <div className="progress-bar" style={{ width: `${lp.progress}%` }} />
                 </div>
 
-                <button
-                  className="btn btn-outline-primary w-100"
-                  onClick={() => openPath(lp)}
-                >
-                  Start Learning
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-outline-primary flex-grow-1"
+                    onClick={() => openPath(lp)}
+                  >
+                    Start Learning
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary text-dark"
+                    title="Download for Offline"
+                    onClick={() => handleDownload(lp)}
+                    disabled={downloadingId === lp.id}
+                  >
+                    {downloadingId === lp.id ? '...' : '⬇️'}
+                  </button>
+                </div>
 
               </div>
             </div>

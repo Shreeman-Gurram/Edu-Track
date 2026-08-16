@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAssessmentById, getAssessments, submitAssessment } from '../api/assessmentApi'
+import { saveActivity } from '../offline/activityStorage'
 
 function Assessment() {
   const navigate = useNavigate()
@@ -29,8 +30,22 @@ function Assessment() {
     setIsSubmitting(true); setError('')
     try {
       const answers = assessment.questions.map((question) => ({ questionId: question.id, answer: selectedAnswers[question.id] }))
-      const { result } = await submitAssessment(assessment.id, answers)
-      navigate('/results', { state: { result } })
+      if (navigator.onLine) {
+        const { result } = await submitAssessment(assessment.id, answers)
+        navigate('/results', { state: { result } })
+      } else {
+        const activity = {
+          activityId: crypto.randomUUID(),
+          type: 'quiz_submission',
+          assessmentId: assessment.id,
+          answers,
+          completedAt: new Date().toISOString()
+        }
+        await saveActivity(activity)
+        window.dispatchEvent(new Event('activity-updated'))
+        alert("Saved offline. Your answers will sync when you're back online.")
+        navigate('/learning-path')
+      }
     } catch (requestError) { setError(requestError.message) } finally { setIsSubmitting(false) }
   }
 

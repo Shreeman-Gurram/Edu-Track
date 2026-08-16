@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getLearningPath } from '../api/learningApi'
+import { getPackage } from '../offline/packageStorage'
+import { saveActivity } from '../offline/activityStorage'
+import { submitAssessment } from '../api/assessmentApi'
 
 function buildKeyPoints(item) {
   const points = []
@@ -54,7 +57,50 @@ function LearningContent() {
   const [selectedAnswer, setSelectedAnswer] = useState('')
   const [showResult, setShowResult]         = useState(false)
 
+  // Quiz-specific state
+  const [pkgQuestions, setPkgQuestions]     = useState([])
+  const [pkgAssessmentId, setPkgAssessmentId] = useState(null)
+  const [quizAnswers, setQuizAnswers]       = useState({})
+  const [quizFeedback, setQuizFeedback]     = useState(null)
+  const [isSubmittingQuiz, setIsSubmittingQuiz] = useState(false)
+
   useEffect(() => {
+    // Helper to load questions and assessmentId from offline store if package exists
+    const loadQuestionsFromStore = () => {
+      getPackage()
+        .then((pkg) => {
+          if (pkg) {
+            setPkgQuestions(pkg.questions || [])
+            setPkgAssessmentId(pkg.assessmentId || null)
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to load questions from offline store:', err)
+        })
+    }
+
+    const loadOfflinePackage = async () => {
+      try {
+        const pkg = await getPackage()
+        if (pkg && pkg.lessons && pkg.lessons.length) {
+          setLessons(itemsToLessons(pkg.lessons))
+          setAssessmentTitle(pkg.title || 'Offline Learning Path')
+          setSubject(pkg.lessons[0]?.topic || '')
+          setPkgQuestions(pkg.questions || [])
+          setPkgAssessmentId(pkg.assessmentId || null)
+        } else {
+          setError('No downloaded learning package found. Please connect to the internet to download your learning path.')
+        }
+      } catch (err) {
+        setError('Failed to load offline learning package: ' + err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // Always fetch offline store questions in background if available
+    loadQuestionsFromStore()
+
     // If navigated from LearningPath with specific path data, use it directly
     if (state?.pathItems && state.pathItems.length) {
       setLessons(itemsToLessons(state.pathItems))
@@ -64,23 +110,35 @@ function LearningContent() {
       return
     }
 
+    if (!navigator.onLine) {
+      loadOfflinePackage()
+      return
+    }
+
     // Fallback: load the most recent active path from the API
     let active = true
     getLearningPath()
       .then(({ learningPath }) => {
         if (!active) return
         if (!learningPath || !learningPath.items || !learningPath.items.length) {
-          setLoading(false)
+          // If no live learning path active, try loading offline package
+          loadOfflinePackage()
           return
         }
         setLessons(itemsToLessons(learningPath.items))
         setAssessmentTitle(learningPath.assessment?.title || '')
         setSubject(learningPath.assessment?.subject || '')
       })
-      .catch((err) => { if (active) setError(err.message) })
+      .catch((err) => {
+        if (active) {
+          // Attempt offline package if API load fails
+          loadOfflinePackage()
+        }
+      })
       .finally(() => { if (active) setLoading(false) })
+
     return () => { active = false }
-  }, [])
+  }, [state])
 
   if (loading) return <div className="text-muted container py-4">Loading learning content…</div>
 
@@ -106,6 +164,11 @@ function LearningContent() {
   const lesson   = lessons[currentLesson]
   const progress = ((currentLesson + 1) / lessons.length) * 100
 
+  // Filter questions for the current concept
+  const currentConceptQuestions = (pkgQuestions || []).filter(
+    (q) => q.concept === lesson.title || q.topic === lesson.topic
+  )
+
   const handleAnswer = (option) => {
     setSelectedAnswer(option)
     setShowResult(false)
@@ -116,6 +179,8 @@ function LearningContent() {
       setCurrentLesson(currentLesson + 1)
       setSelectedAnswer('')
       setShowResult(false)
+      setQuizAnswers({})
+      setQuizFeedback(null)
     }
   }
 
@@ -124,8 +189,78 @@ function LearningContent() {
       setCurrentLesson(currentLesson - 1)
       setSelectedAnswer('')
       setShowResult(false)
+      setQuizAnswers({})
+      setQuizFeedback(null)
     }
   }
+
+  const handleQuizAnswer = (questionId, value) => {
+    setQuizAnswers((prev) => ({
+      ...prev,
+      [questionId]: value
+    }))
+  }
+
+  const handleQuizSubmit = async () => {
+    const answers = currentConceptQuestions.map((q) => ({
+      questionId: q.questionId,
+      answer: quizAnswers[q.questionId]
+    }))
+
+    if (!pkgAssessmentId) {
+      setQuizFeedback({
+        type: 'danger',
+        message: 'No assessment ID found. Cannot submit quiz.'
+      })
+      return
+    }
+
+    setIsSubmittingQuiz(true)
+    setQuizFeedback(null)
+
+    if (navigator.onLine) {
+      try {
+        const res = await submitAssessment(pkgAssessmentId, answers)
+        setQuizFeedback({
+          type: 'success',
+          message: `Quiz submitted successfully! Score: ${res.result.score}/${res.result.totalQuestions} (${res.result.percentage}%).`
+        })
+      } catch (err) {
+        setQuizFeedback({
+          type: 'danger',
+          message: err.message || 'Failed to submit quiz.'
+        })
+      } finally {
+        setIsSubmittingQuiz(false)
+      }
+    } else {
+      try {
+        const activity = {
+          activityId: crypto.randomUUID(),
+          type: 'quiz_submission',
+          assessmentId: pkgAssessmentId,
+          answers,
+          completedAt: new Date().toISOString()
+        }
+        await saveActivity(activity)
+        setQuizFeedback({
+          type: 'success',
+          message: "Saved offline. Your answers will sync when you're back online."
+        })
+        window.dispatchEvent(new Event('activity-updated'))
+      } catch (err) {
+        setQuizFeedback({
+          type: 'danger',
+          message: 'Failed to save quiz offline: ' + err.message
+        })
+      } finally {
+        setIsSubmittingQuiz(false)
+      }
+    }
+  }
+
+  const isQuizReady = currentConceptQuestions.length > 0 && 
+    currentConceptQuestions.every((q) => quizAnswers[q.questionId])
 
   return (
     <div className="container py-4 learning-content-page">
@@ -224,57 +359,108 @@ function LearningContent() {
         </div>
       </div>
 
-      {/* Self-check */}
-      <div className="card border-0 shadow-sm mb-4">
-        <div className="card-body p-4 p-md-5">
+      {/* Concept Practice Quiz OR Fallback Self-check */}
+      {currentConceptQuestions.length > 0 ? (
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-body p-4 p-md-5">
+            <span className="badge bg-primary mb-2">Concept Practice Quiz</span>
+            <h3 className="fw-bold mb-4">Test your knowledge on "{lesson.title}"</h3>
 
-          <div className="mb-4">
-            <span className="badge bg-primary mb-2">Self Check</span>
-            <h3 className="fw-bold">Do you feel confident about "{lesson.title}"?</h3>
-          </div>
+            {currentConceptQuestions.map((q, qIndex) => (
+              <div key={q.questionId} className="mb-5 border-bottom pb-4">
+                <h5 className="fw-semibold mb-3">Question {qIndex + 1}: {q.questionText}</h5>
+                <div className="d-flex flex-column gap-2">
+                  {q.options.map((option) => {
+                    const value = typeof option === 'string' ? option : option.value || option.text
+                    const label = typeof option === 'string' ? option : option.text
+                    const isSelected = quizAnswers[q.questionId] === value
 
-          <div className="mb-4">
-            {['Yes, I understand it', 'Somewhat — need more practice', 'No — I need to review again'].map((option) => (
-              <button
-                key={option}
-                type="button"
-                className={`lesson-option ${selectedAnswer === option ? 'selected' : ''}`}
-                onClick={() => handleAnswer(option)}
-              >
-                <span className="option-radio">{selectedAnswer === option ? '●' : '○'}</span>
-                <span>{option}</span>
-              </button>
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        className={`lesson-option text-start d-flex align-items-center py-2 px-3 border rounded ${isSelected ? 'selected border-primary bg-primary-subtle' : 'bg-light'}`}
+                        onClick={() => handleQuizAnswer(q.questionId, value)}
+                        disabled={isSubmittingQuiz}
+                        style={{ transition: 'all 0.2s' }}
+                      >
+                        <span className="option-radio me-3 fw-bold">{isSelected ? '●' : '○'}</span>
+                        <span>{label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             ))}
+
+            {quizFeedback && (
+              <div className={`alert alert-${quizFeedback.type} mb-4`}>
+                {quizFeedback.message}
+              </div>
+            )}
+
+            <button
+              className="btn btn-primary btn-lg"
+              disabled={!isQuizReady || isSubmittingQuiz}
+              onClick={handleQuizSubmit}
+            >
+              {isSubmittingQuiz ? 'Submitting...' : 'Submit Quiz'}
+            </button>
           </div>
-
-          <button
-            className="btn btn-primary"
-            disabled={!selectedAnswer}
-            onClick={() => setShowResult(true)}
-          >
-            Submit
-          </button>
-
-          {showResult && (
-            <div className="mt-4">
-              {selectedAnswer === 'Yes, I understand it' ? (
-                <div className="alert alert-success mb-0">
-                  <strong>Great! 🎉</strong> Move on to the next concept when you are ready.
-                </div>
-              ) : selectedAnswer === 'Somewhat — need more practice' ? (
-                <div className="alert alert-warning mb-0">
-                  <strong>Keep going.</strong> Re-read the key points and try the next concept — practice makes it stick.
-                </div>
-              ) : (
-                <div className="alert alert-danger mb-0">
-                  <strong>No problem.</strong> Review the content above carefully, then retake the assessment to rebuild your score.
-                </div>
-              )}
-            </div>
-          )}
-
         </div>
-      </div>
+      ) : (
+        /* Fallback Self-check */
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-body p-4 p-md-5">
+
+            <div className="mb-4">
+              <span className="badge bg-primary mb-2">Self Check</span>
+              <h3 className="fw-bold">Do you feel confident about "{lesson.title}"?</h3>
+            </div>
+
+            <div className="mb-4">
+              {['Yes, I understand it', 'Somewhat — need more practice', 'No — I need to review again'].map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`lesson-option ${selectedAnswer === option ? 'selected' : ''}`}
+                  onClick={() => handleAnswer(option)}
+                >
+                  <span className="option-radio">{selectedAnswer === option ? '●' : '○'}</span>
+                  <span>{option}</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              className="btn btn-primary"
+              disabled={!selectedAnswer}
+              onClick={() => setShowResult(true)}
+            >
+              Submit
+            </button>
+
+            {showResult && (
+              <div className="mt-4">
+                {selectedAnswer === 'Yes, I understand it' ? (
+                  <div className="alert alert-success mb-0">
+                    <strong>Great! 🎉</strong> Move on to the next concept when you are ready.
+                  </div>
+                ) : selectedAnswer === 'Somewhat — need more practice' ? (
+                  <div className="alert alert-warning mb-0">
+                    <strong>Keep going.</strong> Re-read the key points and try the next concept — practice makes it stick.
+                  </div>
+                ) : (
+                  <div className="alert alert-danger mb-0">
+                    <strong>No problem.</strong> Review the content above carefully, then retake the assessment to rebuild your score.
+                  </div>
+                )}
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="d-flex justify-content-between align-items-center gap-3">
