@@ -16,6 +16,7 @@ const resultSchema = new Schema(
     totalQuestions: { type: Number, default: 0 },
     answers: { type: [answerSchema], default: [] },
     topicPerformance: { type: Schema.Types.Mixed, default: {} },
+    difficultyPerformance: { type: Schema.Types.Mixed, default: {} },
     weakConcepts: { type: [String], default: [] },
     offlineActivityId: { type: String, trim: true, sparse: true, unique: true },
     completedAt: { type: Date, default: Date.now },

@@ -29,7 +29,7 @@ function formatQuestion(question) {
   };
 }
 
-function formatPackage(learningPackage) {
+function formatPackage(learningPackage, assessmentId = null) {
   return {
     id: learningPackage._id.toString(),
     version: learningPackage.version,
@@ -37,6 +37,7 @@ function formatPackage(learningPackage) {
     topics: learningPackage.topics,
     lessons: learningPackage.lessons,
     questions: (learningPackage.questions || []).map(formatQuestion),
+    assessmentId: assessmentId ? assessmentId.toString() : null,
   };
 }
 
@@ -46,7 +47,7 @@ async function getLearningPackage(userId) {
   const pathSignature = signature(items);
   let learningPackage = await LearningPackage.findOne({ user: userId }).populate({ path: 'questions', select: '-correctAnswer' });
 
-  if (learningPackage && learningPackage.pathSignature === pathSignature) return formatPackage(learningPackage);
+  if (learningPackage && learningPackage.pathSignature === pathSignature) return formatPackage(learningPackage, path ? path.assessment : null);
 
   const clauses = items.map((item) => ({ topic: item.topic, concept: item.concept }));
   const questions = clauses.length ? await Question.find({ $or: clauses }).select('-correctAnswer').limit(50) : [];
@@ -60,7 +61,7 @@ async function getLearningPackage(userId) {
     learningPackage ? { $set: update, $inc: { version: 1 } } : { $set: update, $setOnInsert: { user: userId, version: 1 } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).populate({ path: 'questions', select: '-correctAnswer' });
-  return formatPackage(learningPackage);
+  return formatPackage(learningPackage, path ? path.assessment : null);
 }
 
 function validateActivity(activity) {
