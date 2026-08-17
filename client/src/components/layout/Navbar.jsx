@@ -94,7 +94,8 @@ function Navbar() {
   }, [])
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm py-2">
+    <>
+      <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm py-2">
       <div className="container-fluid px-4">
 
         {/* Logo */}
@@ -143,27 +144,37 @@ function Navbar() {
 
           </div>
 
-          {/* Pending Sync */}
-          {pendingCount > 0 && (
+          {/* Sync Status Button */}
+          {isOnline && (
             <div className="d-flex align-items-center gap-2 border-start ps-3">
-
-              <span className="badge bg-warning text-dark small">
-                Pending sync: {pendingCount}
-              </span>
-
-              {isOnline && (
-                <button
-                  onClick={handleSync}
-                  disabled={isSyncing}
-                  className="btn btn-sm btn-outline-primary py-0 px-2"
-                  style={{ fontSize: '12px' }}
-                >
-                  {isSyncing
-                    ? 'Syncing...'
-                    : 'Sync Now'}
-                </button>
+              {pendingCount > 0 ? (
+                <span className="badge bg-warning text-dark small">
+                  Pending sync: {pendingCount}
+                </span>
+              ) : (
+                <span className="text-muted small">
+                  Synced
+                </span>
               )}
 
+              <button
+                onClick={handleSync}
+                disabled={isSyncing}
+                className="btn btn-sm btn-outline-primary py-0 px-2 d-flex align-items-center gap-1"
+                style={{ fontSize: '12px' }}
+                title="Sync offline activities manually"
+              >
+                {isSyncing ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ width: '10px', height: '10px' }} />
+                    <span>Syncing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🔄 Sync Now</span>
+                  </>
+                )}
+              </button>
             </div>
           )}
 
@@ -228,7 +239,13 @@ function Navbar() {
 
         </div>
       </div>
-    </nav>
+      </nav>
+      {!isOnline && (
+        <div className="bg-warning text-dark text-center py-2 fw-semibold small shadow-sm" style={{ zIndex: 999, position: 'relative' }}>
+          📶 You are currently offline. Accessing downloaded packages.
+        </div>
+      )}
+    </>
   )
 }
 

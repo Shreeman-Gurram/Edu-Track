@@ -149,6 +149,17 @@ function LearningContent() {
       }
     }
 
+    if (state?.package) {
+      const pkg = state.package
+      setLessons(itemsToLessons(pkg.lessons || []))
+      setAssessmentTitle(pkg.title || 'Offline Learning Path')
+      setSubject(pkg.lessons?.[0]?.topic || '')
+      setPkgQuestions(pkg.questions || [])
+      setPkgAssessmentId(pkg.assessmentId || null)
+      setLoading(false)
+      return
+    }
+
     // Always check whether an offline package exists.
     loadQuestionsFromStore()
 
@@ -429,9 +440,15 @@ function LearningContent() {
       {/* Back Button */}
       <button
         className="btn btn-link text-decoration-none px-0 mb-4"
-        onClick={() => navigate('/learning-path')}
+        onClick={() => {
+          if (state?.offline) {
+            navigate('/downloads')
+          } else {
+            navigate('/learning-path')
+          }
+        }}
       >
-        &larr; Back to Learning Path
+        &larr; Back to {state?.offline ? 'Downloads' : 'Learning Path'}
       </button>
 
       {/* Header */}

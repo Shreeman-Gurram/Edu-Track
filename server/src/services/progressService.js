@@ -72,7 +72,7 @@ async function updateProgressFromResult(result) {
       },
       $setOnInsert: { user: populatedResult.user, subject: item.subject, topic: item.topic, concept: item.concept },
     },
-    { new: true, upsert: true, runValidators: true }
+    { returnDocument: 'after', upsert: true, runValidators: true }
   )));
 
   return performances;

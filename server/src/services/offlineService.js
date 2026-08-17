@@ -41,27 +41,36 @@ function formatPackage(learningPackage, assessmentId = null) {
   };
 }
 
-async function getLearningPackage(userId) {
-  const path = await LearningPath.findOne({ user: userId, status: 'active' });
+async function getLearningPackage(userId, learningPathId = null) {
+  const query = { user: userId };
+  if (learningPathId) {
+    query._id = learningPathId;
+  } else {
+    query.status = 'active';
+  }
+  const path = await LearningPath.findOne(query).sort({ createdAt: -1 }).populate('assessment');
   const items = selectedItems(path);
   const pathSignature = signature(items);
-  let learningPackage = await LearningPackage.findOne({ user: userId }).populate({ path: 'questions', select: '-correctAnswer' });
+  const targetTitle = path && path.assessment ? path.assessment.title : 'My Learning Package';
+  let learningPackage = await LearningPackage.findOne({ user: userId, title: targetTitle }).populate({ path: 'questions', select: '-correctAnswer' });
 
-  if (learningPackage && learningPackage.pathSignature === pathSignature) return formatPackage(learningPackage, path ? path.assessment : null);
+  if (learningPackage && learningPackage.pathSignature === pathSignature && learningPackage.title === targetTitle) {
+    return formatPackage(learningPackage, path ? (path.assessment._id || path.assessment) : null);
+  }
 
   const clauses = items.map((item) => ({ topic: item.topic, concept: item.concept }));
   const questions = clauses.length ? await Question.find({ $or: clauses }).select('-correctAnswer').limit(50) : [];
   const topics = [...new Set(items.map((item) => item.topic))];
   const lessons = items.map((item) => ({ topic: item.topic, concept: item.concept, priority: item.priority, recommendedAction: item.recommendedAction }));
   const update = {
-    title: 'My Learning Package', topics, lessons, questions: questions.map((question) => question._id), pathSignature,
+    title: targetTitle, topics, lessons, questions: questions.map((question) => question._id), pathSignature,
   };
   learningPackage = await LearningPackage.findOneAndUpdate(
-    { user: userId },
-    learningPackage ? { $set: update, $inc: { version: 1 } } : { $set: update, $setOnInsert: { user: userId, version: 1 } },
-    { new: true, upsert: true, setDefaultsOnInsert: true }
+    { user: userId, title: targetTitle },
+    learningPackage ? { $set: update, $inc: { version: 1 } } : { $set: update, $setOnInsert: { version: 1 } },
+    { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
   ).populate({ path: 'questions', select: '-correctAnswer' });
-  return formatPackage(learningPackage, path ? path.assessment : null);
+  return formatPackage(learningPackage, path ? (path.assessment._id || path.assessment) : null);
 }
 
 function validateActivity(activity) {
@@ -75,7 +84,16 @@ function validateActivity(activity) {
 async function syncOfflineActivity({ userId, packageVersion, activities }) {
   if (!Number.isInteger(packageVersion) || packageVersion < 1) throw createError('packageVersion must be a positive integer', 400);
   if (!Array.isArray(activities) || !activities.length) throw createError('activities must be a non-empty array', 400);
-  const currentPackage = await LearningPackage.findOne({ user: userId }).select('version');
+
+  const Assessment = require('../models/Assessment');
+  const firstActivity = activities[0];
+  const assessment = firstActivity && mongoose.Types.ObjectId.isValid(firstActivity.assessmentId)
+    ? await Assessment.findById(firstActivity.assessmentId).select('title')
+    : null;
+
+  const currentPackage = assessment
+    ? await LearningPackage.findOne({ user: userId, title: assessment.title }).select('version')
+    : await LearningPackage.findOne({ user: userId }).select('version');
   const synced = [];
   const failed = [];
   const receivedIds = new Set();

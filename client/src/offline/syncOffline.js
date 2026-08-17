@@ -1,5 +1,5 @@
 import { getPendingActivities, deleteActivity } from './activityStorage';
-import { getPackage } from './packageStorage';
+import { getPackages } from './packageStorage';
 import { syncOfflineActivity } from '../api/offlineApi';
 
 let isSyncing = false;
@@ -14,7 +14,9 @@ export async function syncPendingActivities() {
     return { success: true, syncedCount: 0, failedCount: 0 };
   }
 
-  const pkg = await getPackage();
+  const pkgs = await getPackages();
+  const firstActivity = activities[0];
+  const pkg = firstActivity && pkgs.find(p => p.assessmentId === firstActivity.assessmentId) || pkgs[0];
   const packageVersion = pkg ? pkg.version : 1;
 
   isSyncing = true;
