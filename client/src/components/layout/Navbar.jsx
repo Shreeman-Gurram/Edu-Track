@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getPendingActivities } from '../../offline/activityStorage'
 import { syncPendingActivities } from '../../offline/syncOffline'
 import { clearAuthToken } from '../../services/apiClient'
+import { getCurrentUser } from '../../api/authApi'
 
 function Navbar() {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ function Navbar() {
   const [syncStatus, setSyncStatus] = useState('')
   const [isSyncing, setIsSyncing] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [user, setUser] = useState(null)
 
   const updatePendingCount = () => {
     getPendingActivities()
@@ -54,7 +56,7 @@ function Navbar() {
       }
 
       updatePendingCount()
-    } catch (err) {
+    } catch {
       setSyncStatus('Sync failed: network error.')
     } finally {
       setIsSyncing(false)
@@ -63,6 +65,8 @@ function Navbar() {
 
   const handleLogout = () => {
     clearAuthToken()
+    setUser(null)
+    setShowProfileMenu(false)
     navigate('/login')
   }
 
@@ -80,6 +84,13 @@ function Navbar() {
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
     window.addEventListener('activity-updated', updatePendingCount)
+
+    getCurrentUser().then(({ user: currentUser }) => {
+      setUser(currentUser)
+    }).catch(() => {
+      clearAuthToken()
+      navigate('/login', { replace: true })
+    })
 
     updatePendingCount()
 
@@ -192,7 +203,7 @@ function Navbar() {
             >
 
               <span className="text-muted small">
-                Welcome, Student
+                Welcome, {user?.name || 'Student'}
               </span>
 
               <span>

@@ -13,6 +13,11 @@ import MainLayout from './components/layout/MainLayout'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Downloads from './pages/Downloads'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+
+function privatePage(page) {
+  return <ProtectedRoute><MainLayout>{page}</MainLayout></ProtectedRoute>
+}
 
 function App() {
   return (
@@ -28,85 +33,49 @@ function App() {
         {/* Pages using Navbar + Sidebar */}
         <Route
           path="/dashboard"
-          element={
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
-          }
+          element={privatePage(<Dashboard />)}
         />
         <Route
           path="/profile"
-          element={
-          <MainLayout>
-            <Profile />
-          </MainLayout>
-          }
+          element={privatePage(<Profile />)}
         />
         <Route
           path="/subjects"
-          element={
-            <MainLayout>
-              <Subjects />
-            </MainLayout>
-          }
+          element={privatePage(<Subjects />)}
         />
 
         <Route
           path="/topics"
-          element={
-            <MainLayout>
-              <Topics />
-            </MainLayout>
-          }
+          element={privatePage(<Topics />)}
         />
 
         <Route
           path="/learning-content"
-          element={<LearningContent />}
+          element={<ProtectedRoute><LearningContent /></ProtectedRoute>}
         />
 
         <Route
           path="/assessment"
-          element={
-            <MainLayout>
-              <Assessment />
-            </MainLayout>
-          }
+          element={privatePage(<Assessment />)}
         />
 
         <Route
           path="/results"
-          element={
-            <MainLayout>
-              <Results />
-            </MainLayout>
-          }
+          element={privatePage(<Results />)}
         />
 
         <Route
           path="/learning-path"
-          element={
-            <MainLayout>
-              <LearningPath />
-            </MainLayout>
-          }
+          element={privatePage(<LearningPath />)}
         />
 
         <Route
           path="/progress"
-          element={
-            <MainLayout>
-              <Progress />
-            </MainLayout>
-          }
+          element={privatePage(<Progress />)}
         />
         <Route
           path="/downloads"
-          element={
-          <MainLayout>
-            <Downloads />
-          </MainLayout>
-          }
+          element={privatePage(<Downloads />)}
         />
 
       </Routes>
