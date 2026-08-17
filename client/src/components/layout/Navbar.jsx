@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getPendingActivities } from '../../offline/activityStorage'
 import { syncPendingActivities } from '../../offline/syncOffline'
 import { clearAuthToken } from '../../services/apiClient'
+import { getCurrentUser } from '../../api/authApi'
 
-function Navbar() {
+function Navbar({ onMenuClick }) {
   const navigate = useNavigate()
 
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -12,6 +13,7 @@ function Navbar() {
   const [syncStatus, setSyncStatus] = useState('')
   const [isSyncing, setIsSyncing] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [user, setUser] = useState(null)
 
   const updatePendingCount = () => {
     getPendingActivities()
@@ -46,7 +48,7 @@ function Navbar() {
 
         if (result.packageOutdated) {
           setSyncStatus(
-            'Your offline learning package is outdated. Connect to the internet to download the latest version.'
+            'Your offline learning package is outdated.'
           )
         }
       } else {
@@ -54,7 +56,7 @@ function Navbar() {
       }
 
       updatePendingCount()
-    } catch (err) {
+    } catch {
       setSyncStatus('Sync failed: network error.')
     } finally {
       setIsSyncing(false)
@@ -63,6 +65,8 @@ function Navbar() {
 
   const handleLogout = () => {
     clearAuthToken()
+    setUser(null)
+    setShowProfileMenu(false)
     navigate('/login')
   }
 
@@ -81,6 +85,15 @@ function Navbar() {
     window.addEventListener('offline', handleOffline)
     window.addEventListener('activity-updated', updatePendingCount)
 
+    getCurrentUser()
+      .then(({ user: currentUser }) => {
+        setUser(currentUser)
+      })
+      .catch(() => {
+        clearAuthToken()
+        navigate('/login', { replace: true })
+      })
+
     updatePendingCount()
 
     const interval = setInterval(updatePendingCount, 3000)
@@ -88,147 +101,169 @@ function Navbar() {
     return () => {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
-      window.removeEventListener('activity-updated', updatePendingCount)
+      window.removeEventListener(
+        'activity-updated',
+        updatePendingCount
+      )
       clearInterval(interval)
     }
   }, [])
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm py-2">
-      <div className="container-fluid px-4">
+    <>
+      <nav className="navbar bg-white border-bottom shadow-sm app-navbar">
 
-        {/* Logo */}
-        <Link
-          className="navbar-brand fw-bold text-primary fs-4"
-          to="/dashboard"
-        >
-          Edu-Track
-        </Link>
+        <div className="container-fluid app-navbar-inner">
 
-        <div className="ms-auto d-flex align-items-center gap-3">
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            className="mobile-menu-button btn btn-outline-primary"
+            onClick={onMenuClick}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
 
-          {/* Sync Status */}
-          {syncStatus && (
-            <span
-              className="small text-muted border-end pe-3 text-end"
-              style={{
-                maxWidth: '300px',
-                display: 'inline-block'
-              }}
-            >
-              {syncStatus}
-            </span>
-          )}
+          {/* Logo */}
+          <Link
+            className="navbar-brand fw-bold text-primary fs-4"
+            to="/dashboard"
+          >
+            Edu-Track
+          </Link>
 
-          {/* Network Status */}
-          <div className="d-flex align-items-center gap-2">
+          <div className="navbar-actions">
 
-            <span
-              className="rounded-circle d-inline-block"
-              style={{
-                width: '10px',
-                height: '10px',
-                backgroundColor: isOnline
-                  ? '#198754'
-                  : '#dc3545',
-                boxShadow: isOnline
-                  ? '0 0 8px #198754'
-                  : '0 0 8px #dc3545'
-              }}
-            />
-
-            <span className="fw-semibold small">
-              {isOnline ? 'Online' : 'Offline'}
-            </span>
-
-          </div>
-
-          {/* Pending Sync */}
-          {pendingCount > 0 && (
-            <div className="d-flex align-items-center gap-2 border-start ps-3">
-
-              <span className="badge bg-warning text-dark small">
-                Pending sync: {pendingCount}
+            {/* Sync status message */}
+            {syncStatus && (
+              <span className="sync-message small text-muted">
+                {syncStatus}
               </span>
+            )}
 
-              {isOnline && (
+            {/* Network Status */}
+            <div className="network-status d-flex align-items-center gap-2">
+              <span
+                className="rounded-circle d-inline-block"
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  flexShrink: 0,
+                  backgroundColor: isOnline
+                    ? '#198754'
+                    : '#dc3545',
+                  boxShadow: isOnline
+                    ? '0 0 8px #198754'
+                    : '0 0 8px #dc3545'
+                }}
+              />
+
+              <span className="fw-semibold small">
+                {isOnline ? 'Online' : 'Offline'}
+              </span>
+            </div>
+
+            {/* Sync */}
+            {isOnline && (
+              <div className="sync-container d-flex align-items-center gap-2">
+
+                {pendingCount > 0 ? (
+                  <span className="badge bg-warning text-dark small">
+                    Pending: {pendingCount}
+                  </span>
+                ) : (
+                  <span className="text-muted small sync-text">
+                    Synced
+                  </span>
+                )}
+
                 <button
                   onClick={handleSync}
                   disabled={isSyncing}
-                  className="btn btn-sm btn-outline-primary py-0 px-2"
-                  style={{ fontSize: '12px' }}
+                  className="btn btn-sm btn-outline-primary sync-button"
+                  title="Sync offline activities manually"
                 >
-                  {isSyncing
-                    ? 'Syncing...'
-                    : 'Sync Now'}
-                </button>
-              )}
-
-            </div>
-          )}
-
-          {/* Profile Menu */}
-          <div
-            className="border-start ps-3 position-relative"
-          >
-
-            <button
-              type="button"
-              className="btn btn-light d-flex align-items-center gap-2"
-              onClick={() =>
-                setShowProfileMenu(!showProfileMenu)
-              }
-            >
-
-              <span className="text-muted small">
-                Welcome, Student
-              </span>
-
-              <span>
-                ▼
-              </span>
-
-            </button>
-
-            {showProfileMenu && (
-              <div
-                className="position-absolute bg-white border rounded shadow-sm"
-                style={{
-                  right: 0,
-                  top: 'calc(100% + 8px)',
-                  minWidth: '180px',
-                  zIndex: 1000
-                }}
-              >
-
-                {/* Profile */}
-                <Link
-                  to="/profile"
-                  className="dropdown-item px-3 py-2"
-                  onClick={() =>
-                    setShowProfileMenu(false)
-                  }
-                >
-                  👤 Profile
-                </Link>
-
-                {/* Logout */}
-                <button
-                  type="button"
-                  className="dropdown-item px-3 py-2 text-danger"
-                  onClick={handleLogout}
-                >
-                  🚪 Logout
+                  {isSyncing ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-1"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      <span>Syncing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔄</span>
+                      <span className="sync-now-text">
+                        Sync Now
+                      </span>
+                    </>
+                  )}
                 </button>
 
               </div>
             )}
 
+            {/* Profile */}
+            <div className="profile-container position-relative">
+
+              <button
+                type="button"
+                className="btn btn-light profile-button d-flex align-items-center gap-2"
+                onClick={() =>
+                  setShowProfileMenu(!showProfileMenu)
+                }
+              >
+
+                <span className="text-muted small profile-name">
+                  Welcome, {user?.name || 'Student'}
+                </span>
+
+                <span>▼</span>
+
+              </button>
+
+              {showProfileMenu && (
+                <div
+                  className="position-absolute bg-white border rounded shadow-sm profile-dropdown"
+                >
+
+                  <Link
+                    to="/profile"
+                    className="dropdown-item px-3 py-2"
+                    onClick={() =>
+                      setShowProfileMenu(false)
+                    }
+                  >
+                    👤 Profile
+                  </Link>
+
+                  <button
+                    type="button"
+                    className="dropdown-item px-3 py-2 text-danger"
+                    onClick={handleLogout}
+                  >
+                    🚪 Logout
+                  </button>
+
+                </div>
+              )}
+
+            </div>
+
           </div>
 
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {!isOnline && (
+        <div className="bg-warning text-dark text-center py-2 fw-semibold small offline-banner">
+          📶 You are currently offline. Accessing downloaded packages.
+        </div>
+      )}
+    </>
   )
 }
 

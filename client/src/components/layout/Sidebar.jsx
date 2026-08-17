@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }) {
 
   const links = [
     {
@@ -10,6 +10,10 @@ function Sidebar() {
     {
       name: 'Subjects',
       path: '/subjects',
+    },
+    {
+      name: 'Assessments',
+      path: '/assessment',
     },
     {
       name: 'Learning Path',
@@ -26,29 +30,49 @@ function Sidebar() {
   ]
 
   return (
-    <aside className="sidebar bg-white border-end">
+    <aside
+      className={`sidebar bg-white border-end ${
+        isOpen ? 'sidebar-mobile-open' : ''
+      }`}
+    >
 
-      <div className="p-3">
-
-        <h6 className="text-uppercase text-muted mb-3">
+      {/* Mobile close button */}
+      <div className="sidebar-mobile-header">
+        <h6 className="text-uppercase text-muted mb-0">
           Learning
         </h6>
 
-        <div className="d-flex flex-column gap-2">
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          onClick={onClose}
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+      </div>
 
-          {links.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? 'active' : ''}`
-              }
-            >
-              {link.name}
-            </NavLink>
-          ))}
+      {/* Desktop heading */}
+      <div className="sidebar-desktop-header">
+        <h6 className="text-uppercase text-muted mb-3">
+          Learning
+        </h6>
+      </div>
 
-        </div>
+      <div className="sidebar-links">
+
+        {links.map((link) => (
+          <NavLink
+            key={link.path}
+            to={link.path}
+            onClick={onClose}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
+            {link.name}
+          </NavLink>
+        ))}
 
       </div>
 
