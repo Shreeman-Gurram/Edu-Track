@@ -53,7 +53,6 @@ function protect(req, res, next) {
           _id: user._id,
           userId: user._id.toString(),
           role: user.role,
-          grade: user.grade,
         };
 
         return next();
