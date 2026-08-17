@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getLearningPaths } from '../api/learningApi'
 import { getLearningPackage } from '../api/offlineApi'
-import { savePackage, getPackage } from '../offline/packageStorage'
+import { savePackage, getPackage, getPackages } from '../offline/packageStorage'
 
 // Overall priority based on average score across all concepts in the path
 function overallPriorityLabel(items) {
@@ -103,14 +103,14 @@ function LearningPath() {
       .catch((err) => {
         if (!active) return
 
-        // If the user is offline, try loading the saved package
+        // If the user is offline, try loading all saved packages
         if (!navigator.onLine) {
-          getPackage()
-            .then((pkg) => {
+          getPackages()
+            .then((pkgs) => {
               if (!active) return
 
-              if (pkg) {
-                const lp = {
+              if (pkgs && pkgs.length) {
+                const loadedPaths = pkgs.map((pkg) => ({
                   id: pkg.id,
                   assessment: pkg.title || 'Learning Package',
                   assessmentId: pkg.assessmentId,
@@ -119,10 +119,10 @@ function LearningPath() {
                   progress: 0,
                   priority: 'high',
                   createdAt: new Date().toISOString(),
-                }
+                }))
 
-                setPaths([lp])
-                setFocusPath(lp)
+                setPaths(loadedPaths)
+                setFocusPath(loadedPaths[0])
               } else {
                 setError(
                   'No offline package found. Please connect to the internet.'
@@ -132,7 +132,7 @@ function LearningPath() {
             .catch((pkgErr) => {
               if (active) {
                 setError(
-                  'Failed to load offline package: ' + pkgErr.message
+                  'Failed to load offline packages: ' + pkgErr.message
                 )
               }
             })
@@ -185,7 +185,7 @@ function LearningPath() {
     })
 
     try {
-      const res = await getLearningPackage()
+      const res = await getLearningPackage(lp.id)
 
       if (res.success && res.package) {
         await savePackage(res.package)
@@ -334,15 +334,20 @@ function LearningPath() {
               </button>
 
               <button
-                className="btn btn-outline-secondary text-dark"
+                className="btn btn-outline-secondary text-dark d-flex align-items-center gap-2"
                 onClick={() => handleDownload(focusPath)}
                 disabled={
                   downloadingId === focusPath.id
                 }
               >
-                {downloadingId === focusPath.id
-                  ? 'Downloading...'
-                  : '⬇️ Download for Offline'}
+                {downloadingId === focusPath.id ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Downloading...</span>
+                  </>
+                ) : (
+                  '⬇️ Download for Offline'
+                )}
               </button>
 
             </div>
@@ -430,16 +435,19 @@ function LearningPath() {
                   </button>
 
                   <button
-                    className="btn btn-outline-secondary text-dark"
+                    className="btn btn-outline-secondary text-dark d-flex align-items-center justify-content-center"
                     title="Download for Offline"
                     onClick={() => handleDownload(lp)}
                     disabled={
                       downloadingId === lp.id
                     }
+                    style={{ width: '42px', height: '38px' }}
                   >
-                    {downloadingId === lp.id
-                      ? '...'
-                      : '⬇️'}
+                    {downloadingId === lp.id ? (
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    ) : (
+                      '⬇️'
+                    )}
                   </button>
 
                 </div>

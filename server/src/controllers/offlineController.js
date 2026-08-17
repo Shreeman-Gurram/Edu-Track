@@ -1,7 +1,8 @@
 const { getLearningPackage: getLearningPackageService, syncOfflineActivity: syncOfflineActivityService } = require('../services/offlineService');
 
 function getLearningPackage(req, res) {
-  return getLearningPackageService(req.user._id)
+  const { learningPathId } = req.query || {};
+  return getLearningPackageService(req.user._id, learningPathId)
     .then((learningPackage) => res.status(200).json({ success: true, package: learningPackage }))
     .catch((error) => res.status(error.statusCode || 500).json({ success: false, message: error.message || 'Unable to get learning package' }));
 }

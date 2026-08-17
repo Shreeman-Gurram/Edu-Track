@@ -5,30 +5,43 @@ export function savePackage(pkg) {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('learningPackages', 'readwrite');
       const store = transaction.objectStore('learningPackages');
+      const request = store.put(pkg);
 
-      // Clear existing packages first
-      const clearRequest = store.clear();
-
-      clearRequest.onsuccess = () => {
-        const addRequest = store.put(pkg);
-
-        addRequest.onsuccess = () => {
-          resolve(pkg);
-        };
-
-        addRequest.onerror = () => {
-          reject(new Error('Failed to save learning package'));
-        };
+      request.onsuccess = () => {
+        resolve(pkg);
       };
 
-      clearRequest.onerror = () => {
-        reject(new Error('Failed to clear old learning packages'));
+      request.onerror = () => {
+        reject(new Error('Failed to save learning package'));
       };
     });
   });
 }
 
-export function getPackage() {
+export function getPackage(id = null) {
+  return openDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction('learningPackages', 'readonly');
+      const store = transaction.objectStore('learningPackages');
+      const request = id ? store.get(id) : store.getAll();
+
+      request.onsuccess = () => {
+        const result = request.result;
+        if (id) {
+          resolve(result || null);
+        } else {
+          resolve(result && result.length ? result[0] : null);
+        }
+      };
+
+      request.onerror = () => {
+        reject(new Error('Failed to retrieve learning package'));
+      };
+    });
+  });
+}
+
+export function getPackages() {
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('learningPackages', 'readonly');
@@ -36,12 +49,47 @@ export function getPackage() {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        const packages = request.result;
-        resolve(packages && packages.length ? packages[0] : null);
+        resolve(request.result || []);
       };
 
       request.onerror = () => {
-        reject(new Error('Failed to retrieve learning package'));
+        reject(new Error('Failed to retrieve learning packages'));
+      };
+    });
+  });
+}
+
+export function deletePackage(id) {
+  return openDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction('learningPackages', 'readwrite');
+      const store = transaction.objectStore('learningPackages');
+      const request = store.delete(id);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = () => {
+        reject(new Error('Failed to delete learning package'));
+      };
+    });
+  });
+}
+
+export function clearPackages() {
+  return openDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction('learningPackages', 'readwrite');
+      const store = transaction.objectStore('learningPackages');
+      const request = store.clear();
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = () => {
+        reject(new Error('Failed to clear learning packages'));
       };
     });
   });
