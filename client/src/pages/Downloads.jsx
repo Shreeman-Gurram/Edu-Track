@@ -9,11 +9,7 @@ function Downloads() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    loadDownloadedPackage()
-  }, [])
-
-  const loadDownloadedPackage = async () => {
+  async function loadDownloadedPackage() {
     try {
       setLoading(true)
       setError('')
@@ -30,6 +26,10 @@ function Downloads() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadDownloadedPackage()
+  }, [])
 
   const handleOpen = () => {
     if (!downloadedPackage) return

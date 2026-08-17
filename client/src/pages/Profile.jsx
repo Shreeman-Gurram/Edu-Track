@@ -7,41 +7,19 @@ function Profile() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [editing, setEditing] = useState(false)
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    grade: ''
-  })
-
-  useEffect(() => {
-    loadProfile()
-  }, [])
-
-  const loadProfile = async () => {
+  async function loadProfile() {
     try {
       setLoading(true)
       setError('')
 
       const response = await getCurrentUser()
 
-      console.log('Profile API response:', response)
-
       if (response?.success && response?.user) {
         setUser(response.user)
-
-        setFormData({
-          name: response.user.name || '',
-          email: response.user.email || '',
-          grade: response.user.grade || ''
-        })
       } else {
         setError('Unable to load profile information.')
       }
     } catch (err) {
-      console.error('Profile API error:', err)
-
       setError(
         err?.response?.data?.message ||
         err?.message ||
@@ -52,53 +30,11 @@ function Profile() {
     }
   }
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value
-    }))
-  }
-
-  const handleEdit = () => {
-    setEditing(true)
-  }
-
-  const handleCancel = () => {
-    setFormData({
-      name: user.name || '',
-      email: user.email || '',
-      grade: user.grade || ''
+  useEffect(() => {
+    queueMicrotask(() => {
+      loadProfile()
     })
-
-    setEditing(false)
-  }
-
-  const handleSave = async (event) => {
-    event.preventDefault()
-
-    /*
-      IMPORTANT:
-
-      We are not sending the data to the backend yet because
-      the current backend does not expose an update-profile API.
-
-      This function will be connected to the teammate's API
-      once that endpoint is available.
-    */
-
-    console.log('Profile changes:', formData)
-
-    setUser((previous) => ({
-      ...previous,
-      name: formData.name,
-      email: formData.email,
-      grade: formData.grade
-    }))
-
-    setEditing(false)
-  }
+  }, [])
 
   if (loading) {
     return (
@@ -200,19 +136,9 @@ function Profile() {
                   Personal Information
                 </h5>
 
-                {!editing && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleEdit}
-                  >
-                    Edit Profile
-                  </button>
-                )}
-
               </div>
 
-              <form onSubmit={handleSave}>
+              <div>
 
                 <div className="row g-4">
 
@@ -225,11 +151,9 @@ function Profile() {
 
                     <input
                       type="text"
-                      name="name"
                       className="form-control"
-                      value={formData.name}
-                      onChange={handleChange}
-                      readOnly={!editing}
+                      value={user.name || ''}
+                      readOnly
                     />
 
                   </div>
@@ -243,11 +167,9 @@ function Profile() {
 
                     <input
                       type="email"
-                      name="email"
                       className="form-control"
-                      value={formData.email}
-                      onChange={handleChange}
-                      readOnly={!editing}
+                      value={user.email || ''}
+                      readOnly
                     />
 
                   </div>
@@ -277,45 +199,19 @@ function Profile() {
 
                     <input
                       type="text"
-                      name="grade"
                       className="form-control"
-                      value={formData.grade}
-                      onChange={handleChange}
-                      readOnly={!editing}
+                      value={user.grade || 'Not set'}
+                      readOnly
                     />
 
                   </div>
 
                 </div>
 
-                {editing && (
-                  <div className="d-flex gap-2 mt-4">
-
-                    <button
-                      type="submit"
-                      className="btn btn-success"
-                    >
-                      Save Changes
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </button>
-
-                  </div>
-                )}
-
-              </form>
+              </div>
 
               <div className="alert alert-info mt-4 mb-0">
-                <strong>Profile editing:</strong>{' '}
-                    You can update your profile information here.
-                    Changes will be synchronized with your account when
-                    the profile update service is connected.
+                Your information is loaded securely from your authenticated account.
              </div>
 
             </div>
