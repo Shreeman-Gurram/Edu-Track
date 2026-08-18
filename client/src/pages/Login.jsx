@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../api/authApi'
-import { setAuthToken } from '../services/apiClient'
+import { setAuthToken, setCurrentUser } from '../services/apiClient'
 
 function Login() {
   const navigate = useNavigate()
@@ -33,8 +33,9 @@ function Login() {
 
     setIsSubmitting(true)
     try {
-      const { token } = await login(formData)
+      const { token, user } = await login(formData)
       setAuthToken(token)
+      setCurrentUser(user)
       navigate('/dashboard')
     } catch (requestError) {
       setError(requestError.message)

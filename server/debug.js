@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-import { GoogleGenAI } from '@google/genai';
+const dotenv = require('dotenv');
+const { GoogleGenAI } = require('@google/genai');
 
 dotenv.config();
 
@@ -14,12 +14,14 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 console.log("2. Sending test request to Gemini API...");
 
-try {
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
-    contents: 'Hi',
-  });
-  console.log("3. API Success! Response received:\n", response.text);
-} catch (error) {
-  console.error("3. API Failed! Full Error Details:\n", error);
-}
+(async () => {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: 'Hi',
+    });
+    console.log("3. API Success! Response received:\n", response.text);
+  } catch (error) {
+    console.error("3. API Failed! Full Error Details:\n", error);
+  }
+})();
