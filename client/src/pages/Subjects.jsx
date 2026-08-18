@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProgress } from '../api/progressApi'
+import { getAssessments } from '../api/assessmentApi'
 
 function Subjects() {
 
@@ -12,7 +13,7 @@ function Subjects() {
   useEffect(() => {
     let active = true
     getProgress()
-      .then(({ progress: records }) => {
+      .then(async ({ progress: records }) => {
         if (!active) return
 
         // Collapse concept-level records into subject-level cards
@@ -35,13 +36,50 @@ function Subjects() {
           }
         })
 
-        setSubjects(
+        const progressSubjects =
           [...subjectMap.values()].map((s) => ({
             id:          s.id,
             name:        s.name,
             description: s.description,
             topics:      s.topicSet.size,
             progress:    Math.round(s.totalPct / s.count),
+          }))
+
+        // Before the first assessment, there are no Progress documents yet.
+        // The existing assessment endpoint is already filtered by the student's grade,
+        // so it provides the available subject names without creating progress data.
+        if (progressSubjects.length) {
+          setSubjects(progressSubjects)
+          return
+        }
+
+        const { assessments } = await getAssessments()
+        if (!active) return
+
+        const availableSubjects = new Map()
+        for (const assessment of assessments || []) {
+          const name = String(assessment.subject || '').trim()
+          if (!name) continue
+
+          const existing = availableSubjects.get(name) || {
+            id: name,
+            name,
+            description: `Improve your understanding of ${name}.`,
+            topicSet: new Set(),
+            progress: 0,
+          }
+
+          if (assessment.topic) existing.topicSet.add(assessment.topic)
+          availableSubjects.set(name, existing)
+        }
+
+        setSubjects(
+          [...availableSubjects.values()].map((subject) => ({
+            id: subject.id,
+            name: subject.name,
+            description: subject.description,
+            topics: subject.topicSet.size,
+            progress: 0,
           }))
         )
       })

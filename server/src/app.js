@@ -8,6 +8,7 @@ const learningRoutes = require('./routes/learningRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const offlineRoutes = require('./routes/offlineRoutes');
+const scholarshipRoutes = require('./routes/scholarshipRoutes');
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
 
 function createCorsOptions() {
@@ -42,6 +43,7 @@ function createApp() {
 	app.use('/api/ai', aiRoutes);
 	app.use('/api/progress', progressRoutes);
 	app.use('/api/offline', offlineRoutes);
+	app.use('/api/scholarships', scholarshipRoutes);
 
 	app.use(notFoundHandler);
 	app.use(errorHandler);
