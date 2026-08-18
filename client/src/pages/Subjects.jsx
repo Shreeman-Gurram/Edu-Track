@@ -1,0 +1,168 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getProgress } from '../api/progressApi'
+
+function Subjects() {
+
+  const navigate = useNavigate()
+  const [subjects, setSubjects] = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState('')
+
+  useEffect(() => {
+    let active = true
+    getProgress()
+      .then(({ progress: records }) => {
+        if (!active) return
+
+        // Collapse concept-level records into subject-level cards
+        const subjectMap = new Map()
+        records.forEach((r) => {
+          const existing = subjectMap.get(r.subject)
+          if (!existing) {
+            subjectMap.set(r.subject, {
+              id:          r.subject,
+              name:        r.subject,
+              description: `Improve your understanding of ${r.subject}.`,
+              topicSet:    new Set([r.topic]),
+              totalPct:    r.completionPercentage,
+              count:       1,
+            })
+          } else {
+            existing.topicSet.add(r.topic)
+            existing.totalPct += r.completionPercentage
+            existing.count    += 1
+          }
+        })
+
+        setSubjects(
+          [...subjectMap.values()].map((s) => ({
+            id:          s.id,
+            name:        s.name,
+            description: s.description,
+            topics:      s.topicSet.size,
+            progress:    Math.round(s.totalPct / s.count),
+          }))
+        )
+      })
+      .catch((err) => { if (active) setError(err.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  const handleExplore = (subject) => {
+    navigate('/topics', { state: { subject: subject.name } })
+  }
+
+  if (loading) return <div className="text-muted">Loading subjects…</div>
+
+  return (
+    <div>
+
+      {/* Page Header */}
+      <div className="mb-4">
+
+        <h1 className="page-title">
+          My Subjects
+        </h1>
+
+        <p className="text-muted">
+          Choose a subject and continue your learning journey.
+        </p>
+
+      </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      {!subjects.length
+        ? (
+          <div className="alert alert-info">
+            No subjects yet.{' '}
+            <button className="btn btn-link p-0" onClick={() => navigate('/assessment')}>
+              Take an assessment
+            </button>{' '}
+            to populate your subjects.
+          </div>
+        )
+        : (
+          <div className="row g-4">
+
+            {subjects.map((subject) => (
+
+              <div
+                className="col-12 col-md-6"
+                key={subject.id}
+              >
+
+                <div className="card subject-card h-100">
+
+                  <div className="card-body p-4">
+
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+
+                      <div>
+
+                        <h4 className="subject-title">
+                          {subject.name}
+                        </h4>
+
+                        <p className="text-muted mb-0">
+                          {subject.description}
+                        </p>
+
+                      </div>
+
+                      <span className="subject-topic-count">
+                        {subject.topics} Topics
+                      </span>
+
+                    </div>
+
+                    {/* Progress */}
+                    <div className="d-flex justify-content-between mb-2">
+
+                      <span className="small text-muted">
+                        Progress
+                      </span>
+
+                      <span className="small fw-semibold">
+                        {subject.progress}%
+                      </span>
+
+                    </div>
+
+                    <div className="progress subject-progress mb-4">
+
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: `${subject.progress}%`,
+                        }}
+                      />
+
+                    </div>
+
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleExplore(subject)}
+                    >
+                      Explore Subject
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+        )
+      }
+
+    </div>
+  )
+}
+
+export default Subjects
