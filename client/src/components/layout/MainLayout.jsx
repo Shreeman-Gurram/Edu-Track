@@ -1,21 +1,37 @@
+import { useState } from 'react'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 
 function MainLayout({ children }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100 bg-light app-layout">
 
-      <Navbar />
+      <Navbar
+        onMenuClick={() => setSidebarOpen(true)}
+      />
 
-      <div className="d-flex">
+      <div className="app-body">
 
-        <Sidebar />
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-        <main className="flex-grow-1 p-4">
+        <main className="main-content">
           {children}
         </main>
 
       </div>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
     </div>
   )

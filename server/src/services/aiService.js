@@ -1,39 +1,186 @@
-const OpenAI = require('openai');
-const User = require('../models/User');
-const { getOwnedResult, conceptPerformance } = require('./learningService');
+const { GoogleGenAI } = require('@google/genai');
+const { 
+  buildAdaptiveExplanationPrompt, 
+  buildPracticeQuestionsPrompt, 
+  buildGeneralQuestionPrompt 
+} = require('../prompts/aiprompts.js');
 
-function error(message, statusCode) { const e = new Error(message); e.statusCode = statusCode; return e; }
-function parseJson(content) { try { return JSON.parse(content.replace(/^```json\s*|\s*```$/g, '')); } catch (_) { throw error('AI returned a malformed response', 502); } }
-async function contextFor({ userId, resultId, topic, concept }) {
-  const [user, result] = await Promise.all([User.findById(userId).select('grade'), getOwnedResult(resultId, userId)]);
-  if (!user) throw error('User not found', 401);
-  const concepts = conceptPerformance(result);
-  const selected = concepts.find((entry) => entry.concept.toLowerCase() === String(concept || '').toLowerCase()) || concepts.find((entry) => entry.topic.toLowerCase() === String(topic || '').toLowerCase());
-  if (!selected) throw error('The requested topic or concept is not present in this result', 400);
-  return { grade: user.grade || result.assessment.grade, subject: result.assessment.subject, topic: topic || selected.topic, concept: concept || selected.concept, performance: selected.percentage, level: selected.level, weakConcepts: result.weakConcepts, recentMistakes: selected.total - selected.correct };
-}
-async function ask(messages) {
-  if (!process.env.AI_API_KEY) throw error('AI service is not configured', 503);
+const responseCache = new Map();
+
+const getAiClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is missing from environment variables.');
+  }
+  return new GoogleGenAI({ apiKey });
+};
+
+// Strict JSON schemas for Gemini Structured Outputs
+const generalQuestionSchema = {
+  type: 'OBJECT',
+  properties: {
+    question: { type: 'STRING' },
+    answer: { type: 'STRING' },
+    visualDiagram: {
+      type: 'ARRAY',
+      items: { type: 'STRING' }
+    },
+    example: { type: 'STRING' },
+    tip: { type: 'STRING' }
+  },
+  required: ['question', 'answer', 'visualDiagram', 'example', 'tip']
+};
+
+const adaptiveExplanationSchema = {
+  type: 'OBJECT',
+  properties: {
+    concept: { type: 'STRING' },
+    explanation: { type: 'STRING' },
+    visualDiagram: {
+      type: 'ARRAY',
+      items: { type: 'STRING' }
+    },
+    analogy: { type: 'STRING' },
+    keyTakeaways: {
+      type: 'ARRAY',
+      items: { type: 'STRING' }
+    },
+    encouragingNote: { type: 'STRING' }
+  },
+  required: ['concept', 'explanation', 'visualDiagram', 'analogy', 'keyTakeaways', 'encouragingNote']
+};
+
+const practiceQuestionsSchema = {
+  type: 'OBJECT',
+  properties: {
+    questions: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          id: { type: 'STRING' },
+          question: { type: 'STRING' },
+          options: {
+            type: 'ARRAY',
+            items: { type: 'STRING' }
+          },
+          correctAnswer: { type: 'STRING' },
+          explanation: { type: 'STRING' }
+        },
+        required: ['id', 'question', 'options', 'correctAnswer', 'explanation']
+      }
+    }
+  },
+  required: ['questions']
+};
+
+// Robust parser with string cleanup for ASCII control characters
+const parseJsonResponse = (text) => {
+  let cleaned = text
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+
   try {
-    const client = new OpenAI({ apiKey: process.env.AI_API_KEY });
-    const response = await client.chat.completions.create({ model: process.env.AI_MODEL || 'gpt-4.1-mini', messages, response_format: { type: 'json_object' }, temperature: 0.4 });
-    return parseJson(response.choices[0] && response.choices[0].message.content || '');
-  } catch (e) { if (e.statusCode) throw e; throw error('AI service could not complete the request', 502); }
-}
-function instructions(context) { return `Student context: grade ${context.grade}, subject ${context.subject}, topic ${context.topic}, concept ${context.concept}, performance ${context.performance}%, adaptive level ${context.level}, recent mistakes ${context.recentMistakes}, weak concepts ${context.weakConcepts.join(', ')}. Adapt exactly to this backend-determined level. Never mention private data.`; }
-async function generateExplanation({ userId, resultId, topic, concept, studentQuestion }) {
-  if (!studentQuestion || !String(studentQuestion).trim()) throw error('studentQuestion is required', 400);
-  const context = await contextFor({ userId, resultId, topic, concept });
-  const data = await ask([{ role: 'system', content: `You are a supportive tutor. ${instructions(context)} Return JSON only with explanation (string), example (string), keyPoints (array of strings), practicePrompt (string). For beginner use simple language, analogy and steps; basic use worked example; practice concise moderate examples; advanced deeper explanation.` }, { role: 'user', content: String(studentQuestion).trim() }]);
-  if (!data.explanation || !data.example || !Array.isArray(data.keyPoints) || !data.practicePrompt) throw error('AI returned an incomplete explanation', 502);
-  return data;
-}
-async function generatePractice({ userId, resultId, topic, concept, count }) {
-  const requested = Number(count || 3);
-  if (!Number.isInteger(requested) || requested < 1 || requested > 10) throw error('count must be an integer between 1 and 10', 400);
-  const context = await contextFor({ userId, resultId, topic, concept });
-  const data = await ask([{ role: 'system', content: `You create multiple-choice educational practice. ${instructions(context)} Return JSON only as {"questions":[{"questionText":"","options":["","","",""],"correctAnswer":"","explanation":"","difficulty":"easy|medium|hard"}]}. Produce exactly ${requested} questions, with correctAnswer matching one option.` }, { role: 'user', content: 'Create the practice questions now.' }]);
-  if (!Array.isArray(data.questions) || data.questions.length !== requested || data.questions.some((q) => !q.questionText || !Array.isArray(q.options) || !q.options.includes(q.correctAnswer))) throw error('AI returned malformed practice questions', 502);
-  return data.questions;
-}
-module.exports = { generateExplanation, generatePractice };
+    return JSON.parse(cleaned);
+  } catch (err) {
+    // Remove control characters that might invalidate raw strings
+    cleaned = cleaned.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+    return JSON.parse(cleaned);
+  }
+};
+
+const callModelWithSchema = async (prompt, responseSchema) => {
+  const ai = getAiClient();
+  let attempts = 0;
+  const maxAttempts = 2;
+
+  while (attempts < maxAttempts) {
+    try {
+      attempts++;
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.6-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: responseSchema,
+          temperature: 0.2,
+          maxOutputTokens: 2048, // Prevents truncation mid-diagram
+        },
+      });
+      return parseJsonResponse(response.text);
+    } catch (error) {
+      if (attempts >= maxAttempts) throw error;
+      console.warn(`[Attempt ${attempts} retrying due to API latency/format error...]`);
+      await new Promise((res) => setTimeout(res, 1000));
+    }
+  }
+};
+
+const generateAdaptiveExplanation = async (studentData) => {
+  try {
+    const prompt = buildAdaptiveExplanationPrompt(studentData);
+    return await callModelWithSchema(prompt, adaptiveExplanationSchema);
+  } catch (error) {
+    console.error('Error generating AI explanation:', error.message);
+    return {
+      concept: studentData.weakConcept,
+      explanation: `Let's break down ${studentData.weakConcept} step by step.`,
+      visualDiagram: ["[ Input ] --> [ Process ] --> [ Output ]"],
+      analogy: "Think of it like sharing a chocolate bar equally.",
+      keyTakeaways: ["Step 1", "Step 2"],
+      encouragingNote: "Keep going!"
+    };
+  }
+};
+
+const generatePracticeQuestions = async (questionParams) => {
+  try {
+    const prompt = buildPracticeQuestionsPrompt(questionParams);
+    return await callModelWithSchema(prompt, practiceQuestionsSchema);
+  } catch (error) {
+    console.error('Error generating practice questions:', error.message);
+    return {
+      questions: [
+        {
+          id: "fallback_1",
+          question: `What is the core idea of ${questionParams.weakConcept}?`,
+          options: ["Option A", "Option B", "Option C", "Option D"],
+          correctAnswer: "Option A",
+          explanation: "Fallback question generated due to service error."
+        }
+      ]
+    };
+  }
+};
+
+const askGeneralQuestion = async ({ question, grade }) => {
+  const cacheKey = `${question.trim().toLowerCase()}_${grade}`;
+  
+  if (responseCache.has(cacheKey)) {
+    return responseCache.get(cacheKey);
+  }
+
+  try {
+    const prompt = buildGeneralQuestionPrompt({ question, grade });
+    const result = await callModelWithSchema(prompt, generalQuestionSchema);
+    responseCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error('Error answering question:', error.message);
+    return {
+      question,
+      answer: "The AI service encountered a temporary network issue. Please try asking your question again.",
+      visualDiagram: [],
+      example: "N/A",
+      tip: "Please re-run your request."
+    };
+  }
+};
+
+module.exports = {
+  generateAdaptiveExplanation,
+  generatePracticeQuestions,
+  askGeneralQuestion
+};

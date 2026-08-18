@@ -1,6 +1,11 @@
 import { openDB } from './db';
+import { getCurrentUserFromStorage } from '../services/apiClient';
 
 export function savePackage(pkg) {
+  const user = getCurrentUserFromStorage();
+  if (user && user.id) {
+    pkg.userId = user.id;
+  }
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('learningPackages', 'readwrite');
@@ -19,6 +24,8 @@ export function savePackage(pkg) {
 }
 
 export function getPackage(id = null) {
+  const user = getCurrentUserFromStorage();
+  const userId = user ? user.id : null;
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('learningPackages', 'readonly');
@@ -28,9 +35,14 @@ export function getPackage(id = null) {
       request.onsuccess = () => {
         const result = request.result;
         if (id) {
-          resolve(result || null);
+          if (result && result.userId === userId) {
+            resolve(result);
+          } else {
+            resolve(null);
+          }
         } else {
-          resolve(result && result.length ? result[0] : null);
+          const userPkgs = (result || []).filter((p) => p.userId === userId);
+          resolve(userPkgs.length ? userPkgs[0] : null);
         }
       };
 
@@ -42,6 +54,8 @@ export function getPackage(id = null) {
 }
 
 export function getPackages() {
+  const user = getCurrentUserFromStorage();
+  const userId = user ? user.id : null;
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('learningPackages', 'readonly');
@@ -49,7 +63,12 @@ export function getPackages() {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        resolve(request.result || []);
+        const allPkgs = request.result || [];
+        if (userId) {
+          resolve(allPkgs.filter((pkg) => pkg.userId === userId));
+        } else {
+          resolve([]);
+        }
       };
 
       request.onerror = () => {
