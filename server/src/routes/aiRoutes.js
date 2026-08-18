@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { 
+const { Router } = require('express');
+const { 
   handleGetExplanation, 
   handleGeneratePractice, 
   handleAskQuestion 
-} from '../controllers/aiController.js';
+} = require('../controllers/aiController.js');
 
 const router = Router();
 
@@ -11,4 +11,4 @@ router.post('/explain', handleGetExplanation);
 router.post('/generate-practice', handleGeneratePractice);
 router.post('/ask', handleAskQuestion);
 
-export default router;
+module.exports = router;

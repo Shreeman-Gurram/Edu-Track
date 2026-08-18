@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getPendingActivities } from '../../offline/activityStorage'
 import { syncPendingActivities } from '../../offline/syncOffline'
-import { clearAuthToken } from '../../services/apiClient'
+import { clearAuthToken, setCurrentUser } from '../../services/apiClient'
 import { getCurrentUser } from '../../api/authApi'
 
 function Navbar({ onMenuClick }) {
@@ -65,6 +65,7 @@ function Navbar({ onMenuClick }) {
 
   const handleLogout = () => {
     clearAuthToken()
+    setCurrentUser(null)
     setUser(null)
     setShowProfileMenu(false)
     navigate('/login')
@@ -88,9 +89,11 @@ function Navbar({ onMenuClick }) {
     getCurrentUser()
       .then(({ user: currentUser }) => {
         setUser(currentUser)
+        setCurrentUser(currentUser)
       })
       .catch(() => {
         clearAuthToken()
+        setCurrentUser(null)
         navigate('/login', { replace: true })
       })
 

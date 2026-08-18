@@ -1,6 +1,11 @@
 import { openDB } from './db';
+import { getCurrentUserFromStorage } from '../services/apiClient';
 
 export function saveActivity(activity) {
+  const user = getCurrentUserFromStorage();
+  if (user && user.id) {
+    activity.userId = user.id;
+  }
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('activities', 'readwrite');
@@ -19,6 +24,8 @@ export function saveActivity(activity) {
 }
 
 export function getPendingActivities() {
+  const user = getCurrentUserFromStorage();
+  const userId = user ? user.id : null;
   return openDB().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction('activities', 'readonly');
@@ -26,7 +33,12 @@ export function getPendingActivities() {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        resolve(request.result || []);
+        const allActs = request.result || [];
+        if (userId) {
+          resolve(allActs.filter((act) => act.userId === userId));
+        } else {
+          resolve([]);
+        }
       };
 
       request.onerror = () => {

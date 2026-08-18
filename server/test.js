@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-import readline from 'readline';
-import { askGeneralQuestion } from './src/services/aiService.js';
+const dotenv = require('dotenv');
+const readline = require('readline');
+const { askGeneralQuestion } = require('./src/services/aiService');
 
 dotenv.config();
 

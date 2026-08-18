@@ -1,10 +1,10 @@
-import { 
+const { 
   generateAdaptiveExplanation, 
   generatePracticeQuestions, 
   askGeneralQuestion 
-} from '../services/aiService.js';
+} = require('../services/aiService.js');
 
-export const handleGetExplanation = async (req, res) => {
+const handleGetExplanation = async (req, res) => {
   try {
     const { studentGrade, subject, topic, weakConcept, attempts, pastMistakes } = req.body;
 
@@ -27,7 +27,7 @@ export const handleGetExplanation = async (req, res) => {
   }
 };
 
-export const handleGeneratePractice = async (req, res) => {
+const handleGeneratePractice = async (req, res) => {
   try {
     const { studentGrade, subject, topic, weakConcept, count } = req.body;
 
@@ -49,7 +49,7 @@ export const handleGeneratePractice = async (req, res) => {
   }
 };
 
-export const handleAskQuestion = async (req, res) => {
+const handleAskQuestion = async (req, res) => {
   try {
     const { question, grade } = req.body;
 
@@ -62,4 +62,10 @@ export const handleAskQuestion = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
+};
+
+module.exports = {
+  handleGetExplanation,
+  handleGeneratePractice,
+  handleAskQuestion
 };

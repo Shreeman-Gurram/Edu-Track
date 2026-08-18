@@ -1,9 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
-import { 
+const { GoogleGenAI } = require('@google/genai');
+const { 
   buildAdaptiveExplanationPrompt, 
   buildPracticeQuestionsPrompt, 
   buildGeneralQuestionPrompt 
-} from '../prompts/aiPrompts.js';
+} = require('../prompts/aiprompts.js');
 
 const responseCache = new Map();
 
@@ -118,7 +118,7 @@ const callModelWithSchema = async (prompt, responseSchema) => {
   }
 };
 
-export const generateAdaptiveExplanation = async (studentData) => {
+const generateAdaptiveExplanation = async (studentData) => {
   try {
     const prompt = buildAdaptiveExplanationPrompt(studentData);
     return await callModelWithSchema(prompt, adaptiveExplanationSchema);
@@ -135,7 +135,7 @@ export const generateAdaptiveExplanation = async (studentData) => {
   }
 };
 
-export const generatePracticeQuestions = async (questionParams) => {
+const generatePracticeQuestions = async (questionParams) => {
   try {
     const prompt = buildPracticeQuestionsPrompt(questionParams);
     return await callModelWithSchema(prompt, practiceQuestionsSchema);
@@ -155,7 +155,7 @@ export const generatePracticeQuestions = async (questionParams) => {
   }
 };
 
-export const askGeneralQuestion = async ({ question, grade }) => {
+const askGeneralQuestion = async ({ question, grade }) => {
   const cacheKey = `${question.trim().toLowerCase()}_${grade}`;
   
   if (responseCache.has(cacheKey)) {
@@ -177,4 +177,10 @@ export const askGeneralQuestion = async ({ question, grade }) => {
       tip: "Please re-run your request."
     };
   }
+};
+
+module.exports = {
+  generateAdaptiveExplanation,
+  generatePracticeQuestions,
+  askGeneralQuestion
 };

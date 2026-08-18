@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../api/authApi'
-import { setAuthToken } from '../services/apiClient'
+import { setAuthToken, setCurrentUser } from '../services/apiClient'
 
 function Register() {
   const navigate = useNavigate()
@@ -51,13 +51,14 @@ function Register() {
 
     setIsSubmitting(true)
     try {
-      const { token } = await register({
+      const { token, user } = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         grade: formData.grade,
       })
       setAuthToken(token)
+      setCurrentUser(user)
       navigate('/dashboard')
     } catch (requestError) {
       setError(requestError.message)
