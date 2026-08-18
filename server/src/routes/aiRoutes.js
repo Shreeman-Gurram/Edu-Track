@@ -1,7 +1,14 @@
-const express = require('express');
-const { protect } = require('../middleware/authMiddleware');
-const { explanation, practice } = require('../controllers/aiController');
-const router = express.Router();
-router.post('/explanation', protect, explanation);
-router.post('/practice', protect, practice);
-module.exports = router;
+import { Router } from 'express';
+import { 
+  handleGetExplanation, 
+  handleGeneratePractice, 
+  handleAskQuestion 
+} from '../controllers/aiController.js';
+
+const router = Router();
+
+router.post('/explain', handleGetExplanation);
+router.post('/generate-practice', handleGeneratePractice);
+router.post('/ask', handleAskQuestion);
+
+export default router;
