@@ -85,7 +85,6 @@ const parseJsonResponse = (text) => {
   try {
     return JSON.parse(cleaned);
   } catch (err) {
-    // Remove control characters that might invalidate raw strings
     cleaned = cleaned.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
     return JSON.parse(cleaned);
   }
@@ -100,13 +99,14 @@ const callModelWithSchema = async (prompt, responseSchema) => {
     try {
       attempts++;
       const response = await ai.models.generateContent({
+        // ✅ Updated to the exact model requested by the API error log
         model: 'gemini-3.6-flash',
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
           responseSchema: responseSchema,
           temperature: 0.2,
-          maxOutputTokens: 2048, // Prevents truncation mid-diagram
+          maxOutputTokens: 2048,
         },
       });
       return parseJsonResponse(response.text);
