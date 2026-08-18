@@ -50,7 +50,7 @@ function Dashboard() {
         <h1 className="dashboard-title">Welcome, {user.name}</h1>
         <p className="text-muted">Continue your learning journey and improve your skills.</p>
       </div>
-
+      
       <div className="card dashboard-card mb-4">
         <div className="card-body p-4">
           <h4 className="mb-3">Your Profile</h4>
@@ -96,9 +96,9 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Floating Chat Button and Modal Integration */}
-      <AIFloatingButton onClick={() => setIsChatOpen(true)} />
-      <AIChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      {/* Chatbot Floating Button & Modal Integration */}
+      <AIFloatingButton onClick={() => setIsChatOpen(!isChatOpen)} />
+      <AIChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} userGrade={user.grade} />
     </div>
   )
 }
