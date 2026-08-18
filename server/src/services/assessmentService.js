@@ -403,6 +403,96 @@ async function getAdminAssessments() {
   return Assessment.find().populate({ path: 'questions', select: 'questionText grade subject topic concept difficulty options' }).sort({ createdAt: -1 });
 }
 
+/**
+ * Returns the full subject → topic → concept hierarchy
+ * derived from the Question collection (ground truth in MongoDB).
+ * Result is a sorted array:
+ * [
+ *   {
+ *     subject: "Chemistry",
+ *     topics: [
+ *       { topic: "Chemical Reactions", concepts: ["Metal and Acid Reaction", ...] },
+ *       ...
+ *     ]
+ *   },
+ *   ...
+ * ]
+ */
+async function getSubjectCatalog({ userId } = {}) {
+  // Filter by the user's grade when available
+  const matchStage = {};
+  if (userId) {
+    const user = await User.findById(userId).select('grade');
+    if (user && user.grade) {
+      matchStage.grade = user.grade;
+    }
+  }
+
+  // Use aggregation to get the distinct subject/topic/concept hierarchy efficiently
+  const pipeline = [];
+  if (Object.keys(matchStage).length) {
+    pipeline.push({ $match: matchStage });
+  }
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          subject: { $ifNull: ['$subject', 'Unknown Subject'] },
+          topic:   { $ifNull: ['$topic',   'Unknown Topic']   },
+          concept: '$concept', // may be null/empty
+        },
+      },
+    },
+    {
+      $sort: {
+        '_id.subject': 1,
+        '_id.topic':   1,
+        '_id.concept': 1,
+      },
+    }
+  );
+
+  const rows = await Question.aggregate(pipeline);
+  const subjectMap = new Map();
+
+  rows.forEach(({ _id }) => {
+    const { subject, topic, concept } = _id;
+
+    if (!subjectMap.has(subject)) {
+      subjectMap.set(subject, new Map());
+    }
+
+    const topicMap = subjectMap.get(subject);
+
+    if (!topicMap.has(topic)) {
+      topicMap.set(topic, new Set());
+    }
+
+    const conceptSet = topicMap.get(topic);
+
+    if (concept && concept.trim()) {
+      conceptSet.add(concept.trim());
+    }
+  });
+
+  const catalog = [];
+
+  subjectMap.forEach((topicMap, subject) => {
+    const topics = [];
+
+    topicMap.forEach((conceptSet, topic) => {
+      topics.push({
+        topic,
+        concepts: [...conceptSet].sort(),
+      });
+    });
+
+    catalog.push({ subject, topics });
+  });
+
+  return catalog;
+}
+
 module.exports = {
   getAssessments,
   getAssessmentById,
@@ -411,4 +501,5 @@ module.exports = {
   getQuestions,
   createAssessment,
   getAdminAssessments,
+  getSubjectCatalog,
 };

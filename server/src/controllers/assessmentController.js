@@ -6,6 +6,7 @@ const {
   getQuestions: getQuestionsService,
   createAssessment: createAssessmentService,
   getAdminAssessments: getAdminAssessmentsService,
+  getSubjectCatalog: getSubjectCatalogService,
 } = require('../services/assessmentService');
 
 function getErrorStatusCode(error) {
@@ -84,6 +85,13 @@ const getQuestions = (req, res) => getQuestionsService(req.query || {}).then((qu
 const createAssessment = serviceResponse(createAssessmentService, 201, 'assessment');
 const getAdminAssessments = (req, res) => getAdminAssessmentsService().then((assessments) => res.json({ success: true, assessments })).catch((error) => res.status(getErrorStatusCode(error)).json({ success: false, message: error.message }));
 
+const getSubjectCatalog = (req, res) =>
+  getSubjectCatalogService({ userId: req.user.userId })
+    .then((catalog) => res.json({ success: true, catalog }))
+    .catch((error) =>
+      res.status(getErrorStatusCode(error)).json({ success: false, message: error.message })
+    );
+
 module.exports = {
   getAssessments,
   getAssessmentById,
@@ -92,4 +100,5 @@ module.exports = {
   getQuestions,
   createAssessment,
   getAdminAssessments,
+  getSubjectCatalog,
 };
