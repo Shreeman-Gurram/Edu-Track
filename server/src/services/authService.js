@@ -158,7 +158,7 @@ async function forgotPassword({ email }) {
   await user.save();
 
   // Build the reset URL using the raw (unhashed) token
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
   const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
 
   try {

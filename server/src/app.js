@@ -12,13 +12,18 @@ const scholarshipRoutes = require('./routes/scholarshipRoutes');
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
 
 function createCorsOptions() {
-	const clientUrl = process.env.CLIENT_URL;
+	const clientUrl = (process.env.CLIENT_URL || '').replace(/\/$/, '');
 
 	return {
 		origin(origin, callback) {
 			// Requests without an Origin header (health checks, curl, server-to-server)
 			// do not need browser CORS permission.
-			if (!origin || origin === clientUrl) {
+			if (!origin) {
+				return callback(null, true);
+			}
+
+			const normalizedOrigin = origin.replace(/\/$/, '');
+			if (!clientUrl || normalizedOrigin === clientUrl) {
 				return callback(null, true);
 			}
 

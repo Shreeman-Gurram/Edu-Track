@@ -17,6 +17,11 @@ async function sendPasswordResetEmail({ email, resetUrl }) {
 
   // Development fallback: log to console when SMTP is not configured
   if (!host || !user || !pass) {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[EMAIL WARNING] SMTP credentials not configured. Email could not be sent in production.');
+      return;
+    }
+
     console.log('\n========================================');
     console.log('[DEV ONLY] Password Reset Email');
     console.log('========================================');
