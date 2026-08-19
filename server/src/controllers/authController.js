@@ -2,6 +2,8 @@ const {
   registerUser,
   loginUser,
   getUserById,
+  forgotPassword: forgotPasswordService,
+  resetPassword: resetPasswordService,
 } = require('../services/authService');
 
 function getErrorStatusCode(error) {
@@ -66,8 +68,47 @@ function getCurrentUser(req, res) {
     });
 }
 
+function forgotPassword(req, res) {
+  const { email } = req.body || {};
+
+  return forgotPasswordService({ email })
+    .then(({ message }) => {
+      return res.status(200).json({
+        success: true,
+        message,
+      });
+    })
+    .catch((error) => {
+      return res.status(getErrorStatusCode(error)).json({
+        success: false,
+        message: error.message || 'Failed to process request',
+      });
+    });
+}
+
+function resetPassword(req, res) {
+  const { password } = req.body || {};
+  const { token } = req.params;
+
+  return resetPasswordService({ token, password })
+    .then(({ message }) => {
+      return res.status(200).json({
+        success: true,
+        message,
+      });
+    })
+    .catch((error) => {
+      return res.status(getErrorStatusCode(error)).json({
+        success: false,
+        message: error.message || 'Failed to reset password',
+      });
+    });
+}
+
 module.exports = {
   register,
   login,
   getCurrentUser,
+  forgotPassword,
+  resetPassword,
 };

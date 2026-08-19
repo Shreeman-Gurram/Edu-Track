@@ -38,8 +38,49 @@ Instructions:
 `;
 };
 
+const buildAdaptiveTutorPrompt = ({ grade, subject, topic, concept, score, priority, trend }) => {
+  let levelInstruction;
+
+  if (score < 40) {
+    levelInstruction = `The student's score is very low (${score}%). Start from fundamentals. Use simple, everyday language. Explain step-by-step. Explain the core idea first. Give one simple example. Do NOT assume strong prerequisite knowledge.`;
+  } else if (score < 60) {
+    levelInstruction = `The student's score is moderate-low (${score}%). Explain the concept clearly. Focus on likely mistakes students make. Give a worked example. Give simple practice questions.`;
+  } else if (score < 80) {
+    levelInstruction = `The student's score is moderate-high (${score}%). Give a concise explanation. Focus on common mistakes. Give a moderate-difficulty example. Give slightly harder practice questions.`;
+  } else {
+    levelInstruction = `The student's score is high (${score}%). Keep the explanation concise. Focus on deeper understanding and edge cases. Give a more challenging example. Suggest harder practice questions.`;
+  }
+
+  const trendNote = trend === 'declining'
+    ? 'The student\'s performance is declining — reinforce core understanding.'
+    : trend === 'improving'
+      ? 'The student is improving — build on their momentum.'
+      : '';
+
+  return `
+You are a personalized AI tutor for a Grade ${grade || 10} student.
+Subject: ${subject || 'General Studies'}
+Topic: ${topic || 'General Topic'}
+Concept: ${concept}
+Current Score: ${score}%
+Priority: ${priority || 'medium'}
+Trend: ${(trend || 'first_attempt').replace(/_/g, ' ')}
+
+${levelInstruction}
+${trendNote}
+
+Provide:
+1. "explanation": A brief, personalized explanation of "${concept}" adapted to the student's level (2-4 sentences max).
+2. "example": An object with "question" (a worked example problem) and "solution" (the step-by-step solution).
+3. "practice": An array of exactly 2 practice questions. Each must have "question", "answer", and "explanation" fields. Include the full answer and a short explanation for each.
+
+Keep everything concise and focused. This is a learning section, not a full lesson.
+`;
+};
+
 module.exports = {
   buildAdaptiveExplanationPrompt,
   buildPracticeQuestionsPrompt,
-  buildGeneralQuestionPrompt
+  buildGeneralQuestionPrompt,
+  buildAdaptiveTutorPrompt
 };

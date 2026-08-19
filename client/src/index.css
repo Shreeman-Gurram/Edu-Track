@@ -1093,3 +1093,18 @@ body {
   }
 }
 
+/* =========================
+   Gemini AI Tutor Section
+   ========================= */
+.gemini-tutor-card {
+  border-left: 4px solid #0dcaf0 !important;
+}
+
+.gemini-tutor-content h5 {
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.gemini-tutor-content p {
+  color: #495057;
+}

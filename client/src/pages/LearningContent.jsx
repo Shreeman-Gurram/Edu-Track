@@ -4,6 +4,7 @@ import { getLearningPath } from '../api/learningApi'
 import { getPackage } from '../offline/packageStorage'
 import { saveActivity } from '../offline/activityStorage'
 import { submitAssessment } from '../api/assessmentApi'
+import GeminiTutor from '../components/learning/GeminiTutor'
 
 function buildKeyPoints(item) {
   const points = []
@@ -585,6 +586,18 @@ function LearningContent() {
 
         </div>
       </div>
+
+      {/* Gemini AI Tutor Section */}
+      {navigator.onLine && (
+        <GeminiTutor
+          concept={lesson.title}
+          topic={lesson.topic}
+          subject={subject}
+          score={lesson.score}
+          priority={lesson.priority}
+          trend={lesson.trend}
+        />
+      )}
 
       {/* 
         If questions are available for this concept,

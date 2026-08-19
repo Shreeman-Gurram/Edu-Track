@@ -9,6 +9,8 @@ const userSchema = new Schema(
     password: { type: String, required: true, select: false },
     role: { type: String, enum: ['student', 'admin'], default: 'student' },
     grade: { type: String, default: '' },
+    passwordResetToken: { type: String, default: undefined },
+    passwordResetExpires: { type: Date, default: undefined },
   },
   { timestamps: true }
 );

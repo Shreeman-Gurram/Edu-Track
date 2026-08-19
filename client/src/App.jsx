@@ -14,6 +14,8 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Downloads from './pages/Downloads'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 function privatePage(page) {
   return <ProtectedRoute><MainLayout>{page}</MainLayout></ProtectedRoute>
@@ -29,6 +31,8 @@ function App() {
         {/* Login does not use the main layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Pages using Navbar + Sidebar */}
         <Route

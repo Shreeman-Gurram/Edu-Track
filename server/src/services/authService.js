@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const User = require('../models/User');
+const { sendPasswordResetEmail } = require('./emailService');
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -123,8 +125,93 @@ async function getUserById(userId) {
   return formatUser(user);
 }
 
+async function forgotPassword({ email }) {
+  const normalizedEmail = (email || '').toLowerCase().trim();
+
+  if (!normalizedEmail) {
+    throw createError('Email is required', 400);
+  }
+
+  if (!isValidEmail(normalizedEmail)) {
+    throw createError('Invalid email format', 400);
+  }
+
+  // Always return the same generic message to prevent email enumeration
+  const genericMessage = 'If an account exists for this email, a password reset link has been sent.';
+
+  const user = await User.findOne({ email: normalizedEmail });
+
+  if (!user) {
+    // Return generic message even if user doesn't exist
+    return { message: genericMessage };
+  }
+
+  // Generate a secure random reset token
+  const rawToken = crypto.randomBytes(32).toString('hex');
+
+  // Store only the SHA-256 hash of the token in the database
+  const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  // Set token expiry to 30 minutes
+  user.passwordResetToken = hashedToken;
+  user.passwordResetExpires = new Date(Date.now() + 30 * 60 * 1000);
+  await user.save();
+
+  // Build the reset URL using the raw (unhashed) token
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
+
+  try {
+    await sendPasswordResetEmail({ email: normalizedEmail, resetUrl });
+  } catch (err) {
+    // If email sending fails, clear the token so it can't be used
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    throw createError('Failed to send reset email. Please try again.', 500);
+  }
+
+  return { message: genericMessage };
+}
+
+async function resetPassword({ token, password }) {
+  if (!token) {
+    throw createError('Reset token is required', 400);
+  }
+
+  if (!password || password.length < 6) {
+    throw createError('Password must be at least 6 characters long', 400);
+  }
+
+  // Hash the incoming token to match the stored hash
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find user with matching token that has not expired
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date() },
+  });
+
+  if (!user) {
+    throw createError('Invalid or expired reset token', 400);
+  }
+
+  // Hash the new password using existing bcrypt implementation
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Update password and clear the reset token (single-use)
+  user.password = hashedPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  return { message: 'Password has been reset successfully.' };
+}
+
 module.exports = {
   registerUser,
   loginUser,
   getUserById,
+  forgotPassword,
+  resetPassword,
 };
