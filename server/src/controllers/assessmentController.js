@@ -15,7 +15,7 @@ function getErrorStatusCode(error) {
 
 function getAssessments(req, res) {
   return getAssessmentsService({
-    userId: req.user.userId,
+    userId: req.user._id,
     role: req.user.role,
   })
     .then((assessments) => {
@@ -35,7 +35,7 @@ function getAssessments(req, res) {
 function getAssessmentById(req, res) {
   return getAssessmentByIdService({
     assessmentId: req.params.id,
-    userId: req.user.userId,
+    userId: req.user._id,
     role: req.user.role,
   })
     .then((assessment) => {
@@ -58,7 +58,7 @@ function submitAssessment(req, res) {
   return submitAssessmentService({
     assessmentId: req.params.id,
     answers,
-    userId: req.user.userId,
+    userId: req.user._id,
     role: req.user.role,
   })
     .then((result) => {
@@ -86,7 +86,7 @@ const createAssessment = serviceResponse(createAssessmentService, 201, 'assessme
 const getAdminAssessments = (req, res) => getAdminAssessmentsService().then((assessments) => res.json({ success: true, assessments })).catch((error) => res.status(getErrorStatusCode(error)).json({ success: false, message: error.message }));
 
 const getSubjectCatalog = (req, res) =>
-  getSubjectCatalogService({ userId: req.user.userId })
+  getSubjectCatalogService({ userId: req.user._id })
     .then((catalog) => res.json({ success: true, catalog }))
     .catch((error) =>
       res.status(getErrorStatusCode(error)).json({ success: false, message: error.message })

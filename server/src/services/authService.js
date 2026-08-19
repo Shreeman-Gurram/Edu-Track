@@ -43,6 +43,7 @@ function generateToken(user) {
 
 async function registerUser({ name, email, password, role, grade }) {
   const normalizedEmail = (email || '').toLowerCase().trim();
+  const normalizedGrade = String(grade || '').trim();
 
   if (!name || !normalizedEmail || !password) {
     throw createError('Name, email, and password are required', 400);
@@ -54,6 +55,10 @@ async function registerUser({ name, email, password, role, grade }) {
 
   if (password.length < 6) {
     throw createError('Password must be at least 6 characters long', 400);
+  }
+
+  if (!normalizedGrade) {
+    throw createError('Grade is required', 400);
   }
 
   const existingUser = await User.findOne({ email: normalizedEmail });
@@ -68,7 +73,7 @@ async function registerUser({ name, email, password, role, grade }) {
     email: normalizedEmail,
     password: hashedPassword,
     role,
-    grade,
+    grade: normalizedGrade,
   });
 
   const token = generateToken(user);

@@ -49,7 +49,7 @@ function login(req, res) {
 }
 
 function getCurrentUser(req, res) {
-  return getUserById(req.user.userId)
+  return getUserById(req.user._id)
     .then((user) => {
       return res.status(200).json({
         success: true,

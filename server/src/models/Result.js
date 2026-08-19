@@ -24,4 +24,7 @@ const resultSchema = new Schema(
   { timestamps: true }
 );
 
+// Results are always retrieved in a student's timeline order.
+resultSchema.index({ user: 1, completedAt: -1 });
+
 module.exports = mongoose.model('Result', resultSchema);

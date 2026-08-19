@@ -56,4 +56,6 @@ const learningPathSchema = new Schema(
   { timestamps: true }
 );
 
+learningPathSchema.index({ user: 1, status: 1, createdAt: -1 });
+
 module.exports = mongoose.model('LearningPath', learningPathSchema);

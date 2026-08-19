@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../api/authApi'
-import { setAuthToken, setCurrentUser } from '../services/apiClient'
+import { replaceAuthSession } from '../services/apiClient'
 
 function Register() {
   const navigate = useNavigate()
@@ -57,8 +57,7 @@ function Register() {
         password: formData.password,
         grade: formData.grade,
       })
-      setAuthToken(token)
-      setCurrentUser(user)
+      replaceAuthSession(token, user)
       navigate('/dashboard')
     } catch (requestError) {
       setError(requestError.message)
@@ -228,10 +227,9 @@ function Register() {
                 value={formData.grade}
                 onChange={handleChange}
               >
-                <option value="10">Grade 10</option>
                 <option value="9">Grade 9</option>
-                <option value="11">Grade 11</option>
-                <option value="12">Grade 12</option>
+                <option value="10">Grade 10</option>
+               
               </select>
             </div>
 

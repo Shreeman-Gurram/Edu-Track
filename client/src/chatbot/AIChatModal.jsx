@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import { post } from '../services/apiClient';
 import './AIChatModal.css';
 
-function AIChatModal({ isOpen, onClose }) {
+function AIChatModal({ isOpen, onClose, userGrade }) {
   const [messages, setMessages] = useState([
     { 
       sender: 'ai', 
@@ -49,16 +50,10 @@ function AIChatModal({ isOpen, onClose }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/ai/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          question: userMessage, 
-          grade: "10" 
-        }),
+      const resData = await post('/ai/ask', {
+        question: userMessage,
+        grade: userGrade,
       });
-      
-      const resData = await response.json();
       const rawData = resData.data || resData.reply || resData;
 
       if (typeof rawData === 'object' && rawData !== null && !Array.isArray(rawData)) {

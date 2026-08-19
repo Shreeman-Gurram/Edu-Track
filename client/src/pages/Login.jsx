@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../api/authApi'
-import { setAuthToken, setCurrentUser } from '../services/apiClient'
+import { replaceAuthSession } from '../services/apiClient'
 
 function Login() {
   const navigate = useNavigate()
@@ -34,8 +34,7 @@ function Login() {
     setIsSubmitting(true)
     try {
       const { token, user } = await login(formData)
-      setAuthToken(token)
-      setCurrentUser(user)
+      replaceAuthSession(token, user)
       navigate('/dashboard')
     } catch (requestError) {
       setError(requestError.message)

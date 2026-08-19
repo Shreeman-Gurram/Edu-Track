@@ -11,6 +11,14 @@ export function setAuthToken(token) {
   localStorage.setItem(TOKEN_KEY, token)
 }
 
+// A login/register response starts a new browser session. Clear the previous
+// identity first so no component can read stale user data between the update.
+export function replaceAuthSession(token, user) {
+  clearAuthToken()
+  setAuthToken(token)
+  setCurrentUser(user)
+}
+
 export function clearAuthToken() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(USER_KEY)
