@@ -41,6 +41,15 @@ function createApp() {
 	app.use(express.json());
 	app.use(cors(createCorsOptions()));
 
+	// Root status endpoint for deployment verification
+	app.get('/', (req, res) => {
+		res.json({
+			success: true,
+			message: 'Edu-Track Backend API is running',
+			healthCheck: '/api/health',
+		});
+	});
+
 	app.use('/api/health', healthRoutes);
 	app.use('/api/auth', authRoutes);
 	app.use('/api/assessments', assessmentRoutes);
